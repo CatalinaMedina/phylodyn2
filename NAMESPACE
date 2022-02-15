@@ -2,6 +2,7 @@
 
 export(BNPR)
 export(BNPR_PS)
+export(coalsim)
 export(connect_sample_to_tips)
 export(pref_sample)
 export(summarize_phylo)
