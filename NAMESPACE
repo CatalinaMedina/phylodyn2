@@ -3,6 +3,7 @@
 export(BNPR)
 export(BNPR_PS)
 export(connect_sample_to_tips)
+export(pref_sample)
 export(summarize_phylo)
 import(INLA)
 import(stats)
