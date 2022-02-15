@@ -1,4 +1,4 @@
-#' Summarizes phylogeny, connecting sampling times to tips
+#' Summarizes phylogeny and connects sampling times to tips
 #'
 #' @param phy \code{phylo} object containing a phylogeny
 #' @param backwards Boolean; TODO
@@ -14,7 +14,7 @@
 #' }
 #' @export
 #'
-summarize_phylo2 <- function(phy, backwards = TRUE){
+connect_sample_to_tips <- function(phy, backwards = TRUE){
   if (class(phy) != "phylo"){
     stop("object \"phy\" is not of class \"phylo\"")
   }

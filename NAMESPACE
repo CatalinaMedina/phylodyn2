@@ -2,8 +2,8 @@
 
 export(BNPR)
 export(BNPR_PS)
+export(connect_sample_to_tips)
 export(summarize_phylo)
-export(summarize_phylo2)
 import(INLA)
 import(stats)
 import(utils)
