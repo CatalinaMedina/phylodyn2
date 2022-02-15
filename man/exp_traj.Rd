@@ -10,7 +10,7 @@ exp_traj(t, scale = 1000, rate = 1)
 \item{t}{numeric vector of times at which to evaluate the trajectory 
 function.}
 
-\item{scale}{value to return at \code{t=0}.}
+\item{scale}{value to return at \code{t = 0}.}
 
 \item{rate}{exponential decay rate.}
 }
