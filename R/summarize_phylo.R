@@ -1,6 +1,64 @@
+#' Summarizes phylogeny, connecting sampling times to tips
+#'
+#' @param phy \code{phylo} object containing a phylogeny
+#' @param backwards Boolean; TODO
+#' 
+#' @importFrom ape dist.nodes
+#' @import utils
+#'
+#' @return list with \describe{
+#'   \item{ungrouped_samp_df}{data frame connecting sampling times to corresponding tip labels}
+#'   \item{samp_times}{sampling times}
+#'   \item{n_sampled}{number sampled at each sampling time}
+#'   \item{coal_times}{coalescence times}
+#' }
+#' @export
+#'
+summarize_phylo2 <- function(phy, backwards = TRUE){
+  if (class(phy) != "phylo"){
+    stop("object \"phy\" is not of class \"phylo\"")
+  }
+  
+  n_nodes <- phy$Nnode
+  n_tips <- length(phy$tip.label)
+  
+  root_node <- phy$edge[1,1]
+  raw_times <- ape::dist.nodes(phy)[root_node, ]
+  
+  raw_samp_df <- data.frame(
+    "raw_samp_times" = utils::head(raw_times, n_tips), 
+    "tip_labels" = phy$tip.label
+  )
+  
+  raw_coal_times <- utils::tail(raw_times, n_nodes)
+  
+  if (backwards) {
+    max_samp_time <- max(raw_samp_df$raw_samp_times)
+    raw_coal_times <- max_samp_time - raw_coal_times
+    raw_samp_df$raw_samp_times <- max_samp_time - raw_samp_df$raw_samp_times
+    
+  }
+  
+  raw_samp_df <- raw_samp_df[order(raw_samp_df$raw_samp_times), ]
+  samp_tab <- table(raw_samp_df$raw_samp_times)
+  samp_times <- as.numeric(names(samp_tab))
+  n_sampled <- as.numeric(samp_tab)
+  
+  coal_times <- sort(as.numeric(raw_coal_times))
+  
+  # Assumes sampling times start at t = 0
+  list(
+    ungrouped_samp_df = raw_samp_df,
+    samp_times = samp_times,
+    n_sampled  = n_sampled,
+    coal_times = coal_times
+  )
+}
+
+
 #' branching_sampling_times Title TODO
 #'
-#' @param tr a \code{phylo} object containing a phylogeny
+#' @param tr \code{phylo} object containing a phylogeny
 #' 
 #' @importFrom ape node.depth.edgelength
 #'

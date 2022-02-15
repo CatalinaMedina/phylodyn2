@@ -7,7 +7,7 @@
 branching_sampling_times(tr)
 }
 \arguments{
-\item{tr}{a \code{phylo} object containing a phylogeny}
+\item{tr}{\code{phylo} object containing a phylogeny}
 }
 \value{
 numeric vector TODO
