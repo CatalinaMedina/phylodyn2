@@ -45,11 +45,11 @@ infer_coal_samp(
 
 \item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
-\item{simplify}{Boolean; TODO}
+\item{simplify}{logical whether to fully bucket all Poisson points.}
 
 \item{events_only}{Boolean; TODO}
 
-\item{derivative}{Boolean; TODO}
+\item{derivative}{logical whether to calculate estimates of the log-derivative.}
 
 \item{link}{link for INLA "regression"}
 }
