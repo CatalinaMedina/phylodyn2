@@ -388,16 +388,10 @@ infer_coal_samp <- function(
     )
     
   } else {
-    if (data$E_log == length(samp_data$time)) {
-      data$rd_prob <- log(rd_prob_fn(samp_data$time))
-      
-    } else if (data$E_log == 2 * length(samp_data$time)) {
-      data$rd_prob <- rep(log(rd_prob_fn(samp_data$time)), 2)
-      
-    } else {
-      stop("E_log length unpredictable")
-      
-    }
+    data$rd_prob <- c(
+      rep(0, coal_data$time),
+      log(rd_prob_fn(samp_data$time))
+    )
     
     mod <- INLA::inla(
       formula, 
