@@ -1,3 +1,46 @@
+#' gen_INLA_args Title TODO
+#'
+#' @param samp_times numeric vector; sampling times
+#' @param coal_times numeric vector; coalescence times
+#' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
+#'
+#' @return data frame with \describe{
+#'   \item{coal_factor}{TODO}
+#'   \item{s}{sampling and coalescence times combined and sorted} 
+#'   \item{event}{TODO}
+#'   \item{lineages}{TODO}
+#' }
+#'
+gen_INLA_args <- function(samp_times, coal_times, n_sampled)
+{
+  if (sum(n_sampled) != length(coal_times) + 1)
+    stop("Number sampled not equal to number of coalescent events + 1.")
+  
+  if (length(intersect(coal_times, samp_times)) > 0)
+    warning(
+      "Coincident sampling event and coalescent event: results may be unpredictable."
+    )
+  
+  l <- length(samp_times)
+  m <- length(coal_times)
+  sorting <- sort(c(samp_times, coal_times), index.return=TRUE)
+  
+  lineage_change <- c(n_sampled, rep(-1, m))[sorting$ix]
+  lineages <- utils::head(cumsum(lineage_change), -1) # remove entry for the post-final-coalescent-event open interval
+  coal_factor <- lineages * (lineages - 1) / 2
+  
+  event <- c(rep(0, l), rep(1, m))[sorting$ix]
+  
+  list(
+    coal_factor = coal_factor, 
+    s = sorting$x, 
+    event = event, 
+    lineages = lineages
+  )
+  
+}
+
+
 #' Title TODO
 #'
 #' @param grid numeric vector; TODO
