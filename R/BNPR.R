@@ -4,42 +4,36 @@
 #'   times \code{coal_times}, sampling times \code{samp_times}, and number 
 #'   sampled per sampling time \code{n_sampled}.
 #' @param lengthout numeric specifying number of grid points.
-#' @param pref logical. Should the preferential sampling model be used?
-#' @param prec_alpha,prec_beta numerics specifying gamma prior for precision 
-#'   \eqn{\kappa}.
-#' @param beta1_prec numeric specifying precision for normal prior on 
-#'   \eqn{\beta_1}.
-#' @param fns list containing functions of covariates.
-#' @param log_fns logical whether or not to to apply a log-transformation to
-#'   the output of the functions in \code{fns}.
+#' @param pref logical. Should the preferential sampling model be used? If so use BNPR_PS for a better report of estimation
+#' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
+#' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
+#' @param beta1_prec numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
+#' @param fns function; list of covariate functions for the sampling intensity
+#' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
+#' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
 #' @param simplify logical whether to fully bucket all Poisson points.
-#' @param derivative logical whether to calculate estimates of the 
-#'   log-derivative.
+#' @param derivative logical whether to calculate estimates of the log-derivative.
 #' @param forward logical whether to use the finite difference approximations of
 #'   the log-derivative as a forward or backward derivative.
+#' @param link link for INLA "regression"
 #'   
-#' @return Phylodynamic reconstruction of effective population size at grid 
-#'   points. \code{result} contains the INLA output, \code{data} contains the 
-#'   information passed to INLA, \code{grid} contains the grid end points, 
-#'   \code{x} contains the grid point centers, \code{effpop} contains a vector 
-#'   of the posterior median effective population size estimates, 
-#'   \code{effpop025} and \code{effpop975} contain the 2.5th and 97.5th 
-#'   posterior percentiles, \code{summary} contains a data.frame of the 
-#'   estimates, and \code{derivative} (if \code{derivative = TRUE}) contains a
-#'   data.frame summarizing the log-derivative.
+#' @return Phylodynamic reconstruction of effective population size at grid points:\describe{ 
+#'   \item{result}{contains the INLA output}
+#'   \item{data}{contains the information passed to INLA}
+#'   \item{grid}{contains the grid end points}
+#'   \item{x}{contains the grid point centers} 
+#'   \item{effpop}{contains a vector of the posterior median effective population size estimates}
+#'   \item{effpop025}{The 2.5th posterior percentiles}
+#'   \item{effpop975}{The 97.5th posterior percentiles} 
+#'   \item{summary}{contains a data.frame of the estimates}
+#'   \item{derivative}{(if \code{derivative = TRUE}) contains a data frame summarizing the log-derivative}
+#'  }
+#'   
 #' @export
 #' 
-#' @examples
-#' \dontrun{
-#' data("NY_flu")
-#' if (requireNamespace("INLA", quietly = TRUE)) {
-#'  res = BNPR(NY_flu)
-#'  plot_BNPR(res)
-#' }
-#' }
 BNPR <- function(
-    data, lengthout = 100, pref=FALSE, 
-    prec_alpha=0.01, prec_beta=0.01, beta1_prec = 0.001, 
+    data, lengthout = 100, pref = FALSE, 
+    prec_alpha = 0.01, prec_beta = 0.01, beta1_prec = 0.001, 
     rd_prob_fn = NULL, fns = NULL, log_fns = TRUE,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){
@@ -128,7 +122,7 @@ BNPR <- function(
 #' @export
 BNPR_PS <- function(
     data, lengthout = 100, 
-    prec_alpha=0.01, prec_beta=0.01, beta1_prec = 0.001, 
+    prec_alpha = 0.01, prec_beta = 0.01, beta1_prec = 0.001, 
     rd_prob_fn = NULL, fns = NULL, log_fns = TRUE,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){

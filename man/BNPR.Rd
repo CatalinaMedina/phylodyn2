@@ -43,37 +43,41 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{lengthout}{numeric specifying number of grid points.}
 
-\item{pref}{logical. Should the preferential sampling model be used?}
+\item{pref}{logical. Should the preferential sampling model be used? If so use BNPR_PS for a better report of estimation}
 
-\item{prec_alpha, prec_beta}{numerics specifying gamma prior for precision 
-\eqn{\kappa}.}
+\item{prec_alpha}{numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior}
 
-\item{beta1_prec}{numeric specifying precision for normal prior on 
-\eqn{\beta_1}.}
+\item{prec_beta}{numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior}
 
-\item{fns}{list containing functions of covariates.}
+\item{beta1_prec}{numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula}
 
-\item{log_fns}{logical whether or not to to apply a log-transformation to
-the output of the functions in \code{fns}.}
+\item{rd_prob_fn}{function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported}
+
+\item{fns}{function; list of covariate functions for the sampling intensity}
+
+\item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
-\item{derivative}{logical whether to calculate estimates of the 
-log-derivative.}
+\item{derivative}{logical whether to calculate estimates of the log-derivative.}
 
 \item{forward}{logical whether to use the finite difference approximations of
 the log-derivative as a forward or backward derivative.}
+
+\item{link}{link for INLA "regression"}
 }
 \value{
-Phylodynamic reconstruction of effective population size at grid 
-  points. \code{result} contains the INLA output, \code{data} contains the 
-  information passed to INLA, \code{grid} contains the grid end points, 
-  \code{x} contains the grid point centers, \code{effpop} contains a vector 
-  of the posterior median effective population size estimates, 
-  \code{effpop025} and \code{effpop975} contain the 2.5th and 97.5th 
-  posterior percentiles, \code{summary} contains a data.frame of the 
-  estimates, and \code{derivative} (if \code{derivative = TRUE}) contains a
-  data.frame summarizing the log-derivative.
+Phylodynamic reconstruction of effective population size at grid points:\describe{ 
+  \item{result}{contains the INLA output}
+  \item{data}{contains the information passed to INLA}
+  \item{grid}{contains the grid end points}
+  \item{x}{contains the grid point centers} 
+  \item{effpop}{contains a vector of the posterior median effective population size estimates}
+  \item{effpop025}{The 2.5th posterior percentiles}
+  \item{effpop975}{The 97.5th posterior percentiles} 
+  \item{summary}{contains a data.frame of the estimates}
+  \item{derivative}{(if \code{derivative = TRUE}) contains a data frame summarizing the log-derivative}
+ }
 }
 \description{
 Bayesian nonparametric phylodynamic reconstruction.
@@ -83,12 +87,3 @@ Bayesian nonparametric phylodynamic reconstruction.
 \item \code{BNPR_PS}: Uses preferential sampling model.
 }}
 
-\examples{
-\dontrun{
-data("NY_flu")
-if (requireNamespace("INLA", quietly = TRUE)) {
- res = BNPR(NY_flu)
- plot_BNPR(res)
-}
-}
-}
