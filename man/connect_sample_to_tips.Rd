@@ -12,7 +12,7 @@ connect_sample_to_tips(phy, backwards = TRUE)
 \item{backwards}{Boolean; TODO}
 }
 \value{
-list with \describe{
+List with: \describe{
   \item{ungrouped_samp_df}{data frame connecting sampling times to corresponding tip labels}
   \item{samp_times}{sampling times}
   \item{n_sampled}{number sampled at each sampling time}

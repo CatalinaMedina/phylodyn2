@@ -6,7 +6,7 @@
 #' @importFrom ape dist.nodes
 #' @import utils
 #'
-#' @return list with \describe{
+#' @return List with: \describe{
 #'   \item{ungrouped_samp_df}{data frame connecting sampling times to corresponding tip labels}
 #'   \item{samp_times}{sampling times}
 #'   \item{n_sampled}{number sampled at each sampling time}
