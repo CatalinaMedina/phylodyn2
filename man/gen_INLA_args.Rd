@@ -4,14 +4,14 @@
 \alias{gen_INLA_args}
 \title{gen_INLA_args Title TODO}
 \usage{
-gen_INLA_args(samp_times, coal_times, n_sampled)
+gen_INLA_args(samp_times, n_sampled, coal_times)
 }
 \arguments{
 \item{samp_times}{numeric vector; sampling times}
 
-\item{coal_times}{numeric vector; coalescence times}
-
 \item{n_sampled}{numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times}
+
+\item{coal_times}{numeric vector; coalescence times}
 }
 \value{
 data frame with \describe{
