@@ -1,3 +1,70 @@
+#' Title TODO
+#'
+#' @param grid numeric vector; TODO
+#' @param samp_times numeric vector; sampling times
+#' @param coal_times numeric vector; coalescence times
+#' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
+#' @param log_zero numeric; TODO
+#'
+#' @return a data frame with \describe{
+#'   \item{time}{TODO}
+#'   \item{event}{TODO}
+#'   \item{E}{TODO}
+#'   \item{E_log}{TODO}
+#' }
+#'
+coal_stats <- function(
+    grid, 
+    samp_times, 
+    coal_times, 
+    n_sampled = NULL,
+    log_zero = -100
+  ){
+  
+  lengthout <- length(grid) - 1
+  field <- grid[-1] - diff(grid) / 2
+  
+  if (is.null(n_sampled)) {
+    n_sampled <- rep(1, length(samp_times))
+  }
+  
+  args <- gen_INLA_args(
+    samp_times = samp_times, 
+    n_sampled = n_sampled,
+    coal_times = coal_times
+  )
+  
+  coal_factor <- args$coal_factor
+  s <- args$s
+  event <- args$event
+  
+  grid_trimmed <- setdiff(x = grid, y = s)
+  sorting <- sort(c(grid_trimmed, s), index.return=TRUE)
+  sgrid <- sorting$x
+  ordering <- sorting$ix
+  
+  time_index <- cut(x = sgrid[-1], breaks = grid, labels = FALSE)
+  time <- field[time_index]
+  
+  event_out <- c(rep(0, length(grid_trimmed)), event)[ordering]
+  
+  Cfun <- stats::stepfun(x = s, y = c(0, coal_factor, 0), right = TRUE)
+  Cvec <- Cfun(sgrid[-1])
+  E <- diff(sgrid) * Cvec
+  
+  E_log = log(E)
+  E_log[E == 0] = log_zero
+  
+  data.frame(
+    time = time, 
+    event = event_out[-1], 
+    E = E, 
+    E_log = E_log
+  )
+  
+}
+
+
 #' Infer coalescence sample
 #'
 #' @param samp_times numeric vector; sampling times
