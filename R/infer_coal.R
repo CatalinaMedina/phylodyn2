@@ -1,3 +1,30 @@
+#' condense_stats Title TODO
+#'
+#' @param time numeric vector; time of each event
+#' @param event numeric vector; number of events at a given time
+#' @param E numeric vector; TODO
+#' @param log_zero numeric; value to store for E of log(0)
+#'
+#' @return data frame with \describe{
+#'   \item{time}{column of times}
+#'   \item{event}{number of events at each time}
+#'   \item{E}{TODO}
+#'   \item{E_log}{TODO}
+#' }
+#'
+condense_stats <- function(time, event, E, log_zero = -100){
+  result <- stats::aggregate(event ~ time, FUN = sum)
+  result$E <- stats::aggregate(E ~ time, FUN = sum)$E
+  
+  E_log = log(result$E)
+  E_log[result$E == 0] = log_zero
+  result$E_log <- E_log
+  
+  result
+}
+
+
+
 #' gen_INLA_args Title TODO
 #'
 #' @param samp_times numeric vector; sampling times
@@ -41,13 +68,13 @@ gen_INLA_args <- function(samp_times, coal_times, n_sampled)
 }
 
 
-#' Title TODO
+#' coal_stats Title TODO
 #'
 #' @param grid numeric vector; TODO
 #' @param samp_times numeric vector; sampling times
 #' @param coal_times numeric vector; coalescence times
 #' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
-#' @param log_zero numeric; TODO
+#' @param log_zero numeric; value to store for E of log(0)
 #'
 #' @return a data frame with \describe{
 #'   \item{time}{TODO}

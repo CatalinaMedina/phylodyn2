@@ -2,7 +2,7 @@
 % Please edit documentation in R/infer_coal.R
 \name{coal_stats}
 \alias{coal_stats}
-\title{Title TODO}
+\title{coal_stats Title TODO}
 \usage{
 coal_stats(grid, samp_times, coal_times, n_sampled = NULL, log_zero = -100)
 }
@@ -15,7 +15,7 @@ coal_stats(grid, samp_times, coal_times, n_sampled = NULL, log_zero = -100)
 
 \item{n_sampled}{numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times}
 
-\item{log_zero}{numeric; TODO}
+\item{log_zero}{numeric; value to store for E of log(0)}
 }
 \value{
 a data frame with \describe{
@@ -26,5 +26,5 @@ a data frame with \describe{
 }
 }
 \description{
-Title TODO
+coal_stats Title TODO
 }
