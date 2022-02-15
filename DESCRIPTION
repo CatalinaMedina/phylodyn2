@@ -13,4 +13,5 @@ RoxygenNote: 7.1.2
 Imports:
     utils,
     stats,
-    INLA
+    INLA,
+    ape
