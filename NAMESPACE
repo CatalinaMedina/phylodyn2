@@ -2,3 +2,5 @@
 
 export(BNPR)
 export(BNPR_PS)
+import(stats)
+import(utils)

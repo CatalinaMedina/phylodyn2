@@ -1,3 +1,49 @@
+#' samp_stats Title TODO
+#'
+#' @param grid numeric vector; TODO
+#' @param samp_times numeric vector; sampling times 
+#' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
+#' @param trim_end Boolean; TODO
+#' 
+#' @import stats
+#' @import utils
+#'
+#' @return data frame with \describe{
+#'   \item{time}{midpoints of grid}
+#'   \item{count}{TODO}
+#'   \item{E}{difference between consecutive grid points}
+#'   \item{E_log}{log of E}
+#' }
+#'
+samp_stats <- function(grid, samp_times, n_sampled = NULL, trim_end = FALSE){
+  lengthout <- length(grid) - 1
+  field <- grid[-1] - diff(grid) / 2
+  E <- diff(grid)
+  
+  bins <- cut(x = samp_times, breaks = grid, include.lowest = TRUE)
+  
+  if (is.null(n_sampled)) {
+    count <- as.vector(table(bins))
+    
+  } else {
+    tab <- stats::aggregate(n_sampled ~ bins, FUN = sum, labels = FALSE)
+    count <- rep(0, lengthout)
+    count[as.numeric(tab$bins)] <- tab$n_sampled
+    
+  }
+  
+  count[utils::head(grid, -1) >= max(samp_times)] <- NA
+  result <- data.frame(time = field, count = count, E = E, E_log = log(E))
+  
+  if (trim_end) {
+    result <- result[stats::complete.cases(result), ]
+  }
+  
+  result
+  
+}
+
+
 #' condense_stats Title TODO
 #'
 #' @param time numeric vector; time of each event
