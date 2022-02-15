@@ -6,7 +6,7 @@
 #' @param trim_end Boolean; TODO
 #' 
 #' @import stats
-#' @import utils
+#' @importFrom utils head
 #'
 #' @return data frame with \describe{
 #'   \item{time}{midpoints of grid}
@@ -50,6 +50,8 @@ samp_stats <- function(grid, samp_times, n_sampled = NULL, trim_end = FALSE){
 #' @param event numeric vector; number of events at a given time
 #' @param E numeric vector; TODO
 #' @param log_zero numeric; value to store for E of log(0)
+#' 
+#' @importFrom stats aggregate
 #'
 #' @return data frame with \describe{
 #'   \item{time}{column of times}
@@ -70,12 +72,13 @@ condense_stats <- function(time, event, E, log_zero = -100){
 }
 
 
-
 #' gen_INLA_args Title TODO
 #'
 #' @param samp_times numeric vector; sampling times
 #' @param coal_times numeric vector; coalescence times
 #' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
+#'
+#' @importFrom utils head
 #'
 #' @return data frame with \describe{
 #'   \item{coal_factor}{TODO}
@@ -121,6 +124,8 @@ gen_INLA_args <- function(samp_times, coal_times, n_sampled)
 #' @param coal_times numeric vector; coalescence times
 #' @param n_sampled numeric vector; The number of sampling events at each sampling time, length matching the length of samp_times
 #' @param log_zero numeric; value to store for E of log(0)
+#'
+#' @importFrom stats stepfun
 #'
 #' @return a data frame with \describe{
 #'   \item{time}{TODO}
@@ -198,6 +203,9 @@ coal_stats <- function(
 #' @param events_only Boolean; TODO
 #' @param derivative Boolean; TODO
 #' @param link link for INLA "regression"
+#' 
+#' @import INLA
+#' @import utils
 #'
 #' @return list with \describe{
 #'   \item{result}{INLA call return}
@@ -314,8 +322,8 @@ infer_coal_samp <- function(
   if (derivative) {
     Imat <- diag(lengthout)
     A <- utils::head(Imat, -1) - utils::tail(Imat, -1)
-    field <- grid[-1] - diff(grid)/2
-    A <- diag(1/diff(field)) %*% A
+    field <- grid[-1] - diff(grid) / 2
+    A <- diag(1 / diff(field)) %*% A
     A[A == 0] <- NA
     
     lc_many <- INLA::inla.make.lincombs(time = A)
@@ -348,8 +356,11 @@ infer_coal_samp <- function(
     }
     
     mod <- INLA::inla(
-      formula, family = family, data = data,
-      lincomb = lc_many, offset = data$E_log + data$rd_prob,
+      formula, 
+      family = family, 
+      data = data,
+      lincomb = lc_many, 
+      offset = data$E_log + data$rd_prob,
       control.predictor = list(compute = TRUE, link = link)
     )
     
@@ -374,6 +385,9 @@ infer_coal_samp <- function(
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param simplify Boolean; TODO
 #' @param derivative Boolean; TODO
+#' 
+#' @import utils
+#' @import INLA
 #'
 #' @return list with \describe{
 #'   \item{result}{INLA call return}

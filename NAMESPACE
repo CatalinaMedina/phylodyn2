@@ -2,5 +2,9 @@
 
 export(BNPR)
 export(BNPR_PS)
+import(INLA)
 import(stats)
 import(utils)
+importFrom(stats,aggregate)
+importFrom(stats,stepfun)
+importFrom(utils,head)
