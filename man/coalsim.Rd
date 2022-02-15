@@ -41,3 +41,6 @@ A list containing vectors of coalescent times \code{coal_times},
 \description{
 Simulate from inhomogeneous, heterochronous coalescent
 }
+\examples{
+coalsim(0:2, n_sampled = 3:1, traj = unif_traj, lower_bound = 10)
+}

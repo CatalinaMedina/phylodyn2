@@ -17,6 +17,8 @@
 #'   \code{n_sampled}.
 #' @export
 #' 
+#' @examples
+#' coalsim(0:2, n_sampled = 3:1, traj = unif_traj, lower_bound = 10)
 coalsim <- function(
     samp_times, 
     n_sampled, 
@@ -236,11 +238,13 @@ coalsim_thin <- function(samp_times, n_sampled, traj, lower_bound, ...){
 #' @param lineages number of active lineages
 #' @param start time to start at
 #' @param target TODO
+#' 
+#' @importFrom stats knots
 #'
 #' @return result vector minus start
 #'
 hazard_uniroot_stepfun <- function(traj_inv_stepfun, lineages, start, target){
-  knots <- knots(traj_inv_stepfun)
+  knots <- stats::knots(traj_inv_stepfun)
   lin_factor <- 0.5 * lineages * (lineages - 1)
   t <- start
   
@@ -266,4 +270,28 @@ hazard_uniroot_stepfun <- function(traj_inv_stepfun, lineages, start, target){
   }
   
   result - start
+}
+
+
+#' Integrates step function
+#'
+#' @param fun function
+#' @param from start
+#' @param to end
+#' 
+#' @importFrom stats knots
+#'
+#' @return numeric; integration value
+#'
+integrate_step_fun <- function(fun, from, to) {
+  breaks <- stats::knots(fun)
+
+  mask <- breaks > from & breaks < to
+  pts <- c(from, breaks[mask], to)
+  diffs <- diff(pts)
+  midpts <- pts[-1] - diffs / 2
+  
+  segments <- diffs * fun(midpts)
+  
+  sum(segments)
 }
