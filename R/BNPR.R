@@ -9,11 +9,11 @@
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
 #' @param beta1_prec numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
+#' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
 #' @param log_fns_prior_mean value to specify mean for normal prior for fn coefficient
 #' @param log_fns_prior_prec value to specify precision for normal prior for fn coefficient
-#' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param simplify logical whether to fully bucket all Poisson points.
 #' @param derivative logical whether to calculate estimates of the log-derivative.
 #' @param forward logical whether to use the finite difference approximations of

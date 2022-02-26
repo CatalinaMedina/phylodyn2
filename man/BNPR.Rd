@@ -11,10 +11,13 @@ BNPR(
   pref = FALSE,
   prec_alpha = 0.01,
   prec_beta = 0.01,
+  beta1_mean = 0,
   beta1_prec = 0.001,
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
+  log_fns_prior_mean = NULL,
+  log_fns_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -26,10 +29,13 @@ BNPR_PS(
   lengthout = 100,
   prec_alpha = 0.01,
   prec_beta = 0.01,
+  beta1_mean = 0,
   beta1_prec = 0.001,
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
+  log_fns_prior_mean = NULL,
+  log_fns_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -49,6 +55,8 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{prec_beta}{numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior}
 
+\item{beta1_mean}{numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula}
+
 \item{beta1_prec}{numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula}
 
 \item{rd_prob_fn}{function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported}
@@ -56,6 +64,10 @@ sampled per sampling time \code{n_sampled}.}
 \item{fns}{function; list of covariate functions for the sampling intensity}
 
 \item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
+
+\item{log_fns_prior_mean}{value to specify mean for normal prior for fn coefficient}
+
+\item{log_fns_prior_prec}{value to specify precision for normal prior for fn coefficient}
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
