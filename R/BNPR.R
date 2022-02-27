@@ -236,12 +236,18 @@ BNPR_PS_with_RD <- function(
     )
     
   } else {
+    if (log_fns) {
+      fns_list <- list(get_reported_prob)
+    } else {
+      fns_list <- list(get_log_reported_prob)
+    }
+    
     res <- BNPR_PS(
       data = data, lengthout = lengthout, 
       prec_alpha = prec_alpha, prec_beta = prec_beta, 
       beta1_mean = beta1_mean, beta1_prec = beta1_prec,
       rd_prob_fn = NULL,
-      fns = ifelse(log_fns, yes = get_reported_prob, no = get_log_reported_prob),
+      fns = fns_list,
       log_fns = log_fns, 
       fns_coeff_prior_mean = 1, 
       fns_coeff_prior_prec = 1000,
