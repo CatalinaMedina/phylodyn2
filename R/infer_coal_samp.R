@@ -7,8 +7,8 @@
 #' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
-#' @param log_fns_prior_mean value to specify mean for normal prior for fn coefficient
-#' @param log_fns_prior_prec value to specify precision for normal prior for fn coefficient
+#' @param fns_coeff_prior_mean value to specify mean for normal prior for fn coefficient
+#' @param fns_coeff_prior_prec value to specify precision for normal prior for fn coefficient
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
@@ -33,7 +33,7 @@ infer_coal_samp <- function(
   samp_times, coal_times, n_sampled=NULL, lengthout = 100,
   rd_prob_fn = NULL, 
   fns = NULL, log_fns = TRUE,
-  log_fns_prior_mean = NULL, log_fns_prior_prec = NULL,
+  fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
   prec_alpha = 0.01, prec_beta = 0.01, 
   beta1_mean = 0, beta1_prec = 0.001, 
   use_samp = FALSE, simplify = FALSE, 
@@ -58,6 +58,12 @@ infer_coal_samp <- function(
   
   default_prior_mean <- 0
   default_prior_prec <- 0.01
+  
+  if (is.null(fns_coeff_prior_mean) ) {
+    fns_coeff_prior_mean <- default_prior_mean
+  } else if (is.null(fns_coeff_prior_prec)) {
+    fns_coeff_prior_prec <- default_prior_prec
+  }
   
   grid <- seq(min(samp_times), max(coal_times), length.out = lengthout + 1)
   
@@ -113,12 +119,6 @@ infer_coal_samp <- function(
         f(time2, w, copy="time", fixed=FALSE, param=c(beta1_mean, beta1_prec))
       
     } else {
-      if (is.null(log_fns_prior_mean) ) {
-        log_fns_prior_mean <- default_log_fns_mean
-      } else if (is.null(log_fns_prior_prec)) {
-        log_fns_prior_prec <- default_log_fns_prec
-      }
-      
       vals <- NULL
       bins <- sum(data$beta0 == 0)
       
@@ -169,8 +169,8 @@ infer_coal_samp <- function(
       offset = data$E_log,
       control.predictor = list(compute = TRUE, link = link),
       control.fixed = list(
-        mean = list(fn = log_fns_prior_mean, default = default_prior_mean),
-        prec = list(fn = log_fns_prior_prec, default = default_prior_prec)
+        mean = list(fn = fns_coeff_prior_mean, default = default_prior_mean),
+        prec = list(fn = fns_coeff_prior_prec, default = default_prior_prec)
       )
     )
     
@@ -188,8 +188,8 @@ infer_coal_samp <- function(
       offset = data$E_log + data$rd_prob,
       control.predictor = list(compute = TRUE, link = link),
       control.fixed = list(
-        mean = list(fn = log_fns_prior_mean, default = default_prior_mean),
-        prec = list(fn = log_fns_prior_prec, default = default_prior_prec)
+        mean = list(fn = fns_coeff_prior_mean, default = default_prior_mean),
+        prec = list(fn = fns_coeff_prior_prec, default = default_prior_prec)
       )
     )
     

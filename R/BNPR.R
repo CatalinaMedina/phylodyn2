@@ -6,8 +6,8 @@
 #' @param lengthout numeric specifying number of grid points.
 #' @param pref logical. Should the preferential sampling model be used? If so use BNPR_PS for a better report of estimation
 #' @param max_time numeric; oldest sampling time in data
-#' @param historic_sample_time numeric vector with historic times samples were collected (GIASID data base can be useful for obtaining such data for a given location)
-#' @param historic_report_time numeric vector with historic times sequenced samples were reported (GIASID data base can be useful for obtaining such data for a given location)
+#' @param historic_sample_time numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)
+#' @param historic_report_time numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)
 #' @param rd_as_offset logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
@@ -16,8 +16,8 @@
 #' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
-#' @param log_fns_prior_mean value to specify mean for normal prior for fn coefficient
-#' @param log_fns_prior_prec value to specify precision for normal prior for fn coefficient
+#' @param fns_coeff_prior_mean value to specify mean for normal prior for fn coefficient
+#' @param fns_coeff_prior_prec value to specify precision for normal prior for fn coefficient
 #' @param simplify logical whether to fully bucket all Poisson points.
 #' @param derivative logical whether to calculate estimates of the log-derivative.
 #' @param forward logical whether to use the finite difference approximations of
@@ -36,7 +36,7 @@
 #'   \item{derivative}{(if \code{derivative = TRUE}) contains a data frame summarizing the log-derivative}
 #'  }
 #'   
-#' @import dplyr
+#' @importFrom dplyr right_join
 #' @importFrom mgcv gam
 #'   
 #' @export
@@ -46,7 +46,7 @@ BNPR <- function(
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
     rd_prob_fn = NULL, 
     fns = NULL, log_fns = TRUE,
-    log_fns_prior_mean = NULL, log_fns_prior_prec = NULL,
+    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){
   
@@ -69,7 +69,7 @@ BNPR <- function(
     n_sampled = phy$n_sampled, 
     rd_prob_fn = rd_prob_fn, 
     fns = fns, log_fns = log_fns,
-    log_fns_prior_mean = log_fns_prior_mean, log_fns_prior_prec = log_fns_prior_prec,
+    fns_coeff_prior_mean = fns_coeff_prior_mean, fns_coeff_prior_prec = fns_coeff_prior_prec,
     lengthout = lengthout,
     prec_alpha = prec_alpha, prec_beta = prec_beta,
     beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
@@ -140,7 +140,7 @@ BNPR_PS <- function(
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
     rd_prob_fn = NULL, 
     fns = NULL, log_fns = TRUE, 
-    log_fns_prior_mean = NULL, log_fns_prior_prec = NULL,
+    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){
   
@@ -150,7 +150,7 @@ BNPR_PS <- function(
     beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
     rd_prob_fn = rd_prob_fn, 
     fns = fns, log_fns = log_fns,
-    log_fns_prior_mean = log_fns_prior_mean, log_fns_prior_prec = log_fns_prior_prec,
+    fns_coeff_prior_mean = fns_coeff_prior_mean, fns_coeff_prior_prec = fns_coeff_prior_prec,
     simplify = simplify, derivative = derivative, forward = forward, link = link
   )
   
@@ -163,16 +163,16 @@ BNPR_PS_with_RD <- function(
     rd_as_offset = TRUE, lengthout = 100,
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
     fns = NULL, log_fns = TRUE, 
-    log_fns_prior_mean = NULL, log_fns_prior_prec = NULL,
+    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1  
   ){
   
   # Define reporting delay probability function from historic data
   historic_data <- data.frame(
     sample_time = historic_sample_time,
-    report_time = historic_report_time
-  ) %>% 
-    mutate(reported = report_time >= 0)
+    report_time = historic_report_time,
+    reported = historic_report_time >= 0 
+  )
   
   logistic_fit <- mgcv::gam(
     formula = reported ~ s(sample_time), 
@@ -198,19 +198,19 @@ BNPR_PS_with_RD <- function(
       )
     )
     
-    reported_prob_int_df %>% 
-      right_join(
-        data.frame(
-          "sampling_time" = sampling_times,
-          "interval" = cut(
-            x = sampling_times, 
-            breaks = time_grid, 
-            right = FALSE,
-            include.lowest = TRUE
-          )
-        )
-      ) %>% 
-      pull(reported_prob)
+    sampling_time_int_df <- data.frame(
+      "sampling_time" = sampling_times,
+      "interval" = cut(
+        x = sampling_times, 
+        breaks = time_grid, 
+        right = FALSE,
+        include.lowest = TRUE
+      )
+    )
+      
+    joined_df <- dplyr::right_join(reported_prob_int_df, sampling_time_int_df)
+    
+    joined_df$reported_prob
   }
   
   get_log_reported_prob <- function(sampling_times) {
@@ -224,8 +224,8 @@ BNPR_PS_with_RD <- function(
       beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
       rd_prob_fn = get_reported_prob, 
       fns = fns, log_fns = log_fns, 
-      log_fns_prior_mean = log_fns_prior_mean, 
-      log_fns_prior_prec = log_fns_prior_prec,
+      fns_coeff_prior_mean = fns_coeff_prior_mean, 
+      fns_coeff_prior_prec = fns_coeff_prior_prec,
       simplify = simplify, derivative = derivative, 
       forward = forward, link = link
     )
@@ -241,8 +241,8 @@ BNPR_PS_with_RD <- function(
         fns
       ),
       log_fns = log_fns, 
-      log_fns_prior_mean = log_fns_prior_mean, 
-      log_fns_prior_prec = log_fns_prior_prec,
+      fns_coeff_prior_mean = fns_coeff_prior_mean, 
+      fns_coeff_prior_prec = fns_coeff_prior_prec,
       simplify = simplify, derivative = derivative, 
       forward = forward, link = link
     )

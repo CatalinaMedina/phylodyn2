@@ -16,4 +16,5 @@ Imports:
     INLA,
     ape,
     graphics,
+    mgcv,
     dplyr

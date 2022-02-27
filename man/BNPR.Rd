@@ -17,8 +17,8 @@ BNPR(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
+  fns_coeff_prior_mean = NULL,
+  fns_coeff_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -35,8 +35,8 @@ BNPR_PS(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
+  fns_coeff_prior_mean = NULL,
+  fns_coeff_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -56,8 +56,8 @@ BNPR_PS_with_RD(
   beta1_prec = 0.001,
   fns = NULL,
   log_fns = TRUE,
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
+  fns_coeff_prior_mean = NULL,
+  fns_coeff_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -87,9 +87,9 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
-\item{log_fns_prior_mean}{value to specify mean for normal prior for fn coefficient}
+\item{fns_coeff_prior_mean}{value to specify mean for normal prior for fn coefficient}
 
-\item{log_fns_prior_prec}{value to specify precision for normal prior for fn coefficient}
+\item{fns_coeff_prior_prec}{value to specify precision for normal prior for fn coefficient}
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
@@ -100,9 +100,9 @@ the log-derivative as a forward or backward derivative.}
 
 \item{link}{link for INLA "regression"}
 
-\item{historic_sample_time}{numeric vector with historic times samples were collected (GIASID data base can be useful for obtaining such data for a given location)}
+\item{historic_sample_time}{numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)}
 
-\item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GIASID data base can be useful for obtaining such data for a given location)}
+\item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)}
 
 \item{max_time}{numeric; oldest sampling time in data}
 
