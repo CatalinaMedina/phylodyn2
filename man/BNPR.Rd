@@ -3,6 +3,7 @@
 \name{BNPR}
 \alias{BNPR}
 \alias{BNPR_PS}
+\alias{BNPR_PS_with_RD}
 \title{Bayesian nonparametric phylodynamic reconstruction.}
 \usage{
 BNPR(
@@ -32,6 +33,27 @@ BNPR_PS(
   beta1_mean = 0,
   beta1_prec = 0.001,
   rd_prob_fn = NULL,
+  fns = NULL,
+  log_fns = TRUE,
+  log_fns_prior_mean = NULL,
+  log_fns_prior_prec = NULL,
+  simplify = TRUE,
+  derivative = FALSE,
+  forward = TRUE,
+  link = 1
+)
+
+BNPR_PS_with_RD(
+  data,
+  historic_sample_time,
+  historic_report_time,
+  max_time,
+  rd_as_offset = TRUE,
+  lengthout = 100,
+  prec_alpha = 0.01,
+  prec_beta = 0.01,
+  beta1_mean = 0,
+  beta1_prec = 0.001,
   fns = NULL,
   log_fns = TRUE,
   log_fns_prior_mean = NULL,
@@ -77,6 +99,14 @@ sampled per sampling time \code{n_sampled}.}
 the log-derivative as a forward or backward derivative.}
 
 \item{link}{link for INLA "regression"}
+
+\item{historic_sample_time}{numeric vector with historic times samples were collected (GIASID data base can be useful for obtaining such data for a given location)}
+
+\item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GIASID data base can be useful for obtaining such data for a given location)}
+
+\item{max_time}{numeric; oldest sampling time in data}
+
+\item{rd_as_offset}{logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)}
 }
 \value{
 Phylodynamic reconstruction of effective population size at grid points:\describe{ 
@@ -97,5 +127,7 @@ Bayesian nonparametric phylodynamic reconstruction.
 \section{Functions}{
 \itemize{
 \item \code{BNPR_PS}: Uses preferential sampling model.
+
+\item \code{BNPR_PS_with_RD}: Uses preferential sampling model with adjustment for reporting delay
 }}
 

@@ -175,7 +175,7 @@ infer_coal_samp <- function(
     )
     
   } else {
-    data$rd_prob <- c(
+    data$log_rd_prob <- c(
       rep(0, length(coal_data$time)),
       log(rd_prob_fn(samp_data$time))
     )
