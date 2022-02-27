@@ -5,7 +5,6 @@
 #'   sampled per sampling time \code{n_sampled}.
 #' @param lengthout numeric specifying number of grid points.
 #' @param pref logical. Should the preferential sampling model be used? If so use BNPR_PS for a better report of estimation
-#' @param max_time numeric; oldest sampling time in data
 #' @param historic_sample_time numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)
 #' @param historic_report_time numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)
 #' @param rd_as_offset logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
@@ -140,7 +139,7 @@ BNPR_PS <- function(
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
     rd_prob_fn = NULL, 
     fns = NULL, log_fns = TRUE, 
-    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
+    fns_coeff_prior_mean = 0, fns_coeff_prior_prec = 0.01,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){
   
@@ -157,13 +156,15 @@ BNPR_PS <- function(
 }
 
 #' @describeIn BNPR Uses preferential sampling model with adjustment for reporting delay
+#' @export
 BNPR_PS_with_RD <- function(
     data, 
-    historic_sample_time, historic_report_time, max_time,
+    historic_sample_time, historic_report_time,
     rd_as_offset = TRUE, lengthout = 100,
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
-    fns = NULL, log_fns = TRUE, 
-    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
+    fns = NULL, #Don't have the ability to handle rd as func with other covariates
+    log_fns = TRUE, 
+    fns_coeff_prior_mean = 0, fns_coeff_prior_prec = 0.01,
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1  
   ){
   
@@ -180,10 +181,10 @@ BNPR_PS_with_RD <- function(
     family = "binomial"
   )
   
-  time_grid <- seq(0, max_time, length = lengthout)
-  midpoints <- time_grid[-lengthout] + diff(time_grid)/2
-  
   get_reported_prob <- function(sampling_times){
+    time_grid <- seq(0, max(sampling_times), length = lengthout)
+    midpoints <- time_grid[-lengthout] + diff(time_grid)/2
+    
     reported_prob_int_df <- data.frame(
       "interval" = cut(
         x = midpoints, 
@@ -208,7 +209,11 @@ BNPR_PS_with_RD <- function(
       )
     )
       
-    joined_df <- dplyr::right_join(reported_prob_int_df, sampling_time_int_df)
+    joined_df <- dplyr::right_join(
+      reported_prob_int_df, 
+      sampling_time_int_df,
+      by = "interval"
+    )
     
     joined_df$reported_prob
   }
@@ -236,13 +241,10 @@ BNPR_PS_with_RD <- function(
       prec_alpha = prec_alpha, prec_beta = prec_beta, 
       beta1_mean = beta1_mean, beta1_prec = beta1_prec,
       rd_prob_fn = NULL,
-      fns = append(
-        ifelse(log_fns, yes = get_reported_prob, no = get_log_reported_prob),
-        fns
-      ),
+      fns = ifelse(log_fns, yes = get_reported_prob, no = get_log_reported_prob),
       log_fns = log_fns, 
-      fns_coeff_prior_mean = fns_coeff_prior_mean, 
-      fns_coeff_prior_prec = fns_coeff_prior_prec,
+      fns_coeff_prior_mean = 1, 
+      fns_coeff_prior_prec = 1000,
       simplify = simplify, derivative = derivative, 
       forward = forward, link = link
     )

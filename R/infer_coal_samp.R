@@ -56,15 +56,6 @@ infer_coal_samp <- function(
     stop("Last sampling time occurs after last coalescent time")
   }
   
-  default_prior_mean <- 0
-  default_prior_prec <- 0.01
-  
-  if (is.null(fns_coeff_prior_mean) ) {
-    fns_coeff_prior_mean <- default_prior_mean
-  } else if (is.null(fns_coeff_prior_prec)) {
-    fns_coeff_prior_prec <- default_prior_prec
-  }
-  
   grid <- seq(min(samp_times), max(coal_times), length.out = lengthout + 1)
   
   if (is.null(n_sampled)) {
@@ -134,8 +125,8 @@ infer_coal_samp <- function(
       data$fn <- vals
       
       formula <- Y ~ -1 + beta0 + fn +
-        f(time, model="rw1", hyper = hyper, constr = FALSE) +
-        f(time2, w, copy="time", fixed=FALSE, param=c(beta1_mean, beta1_prec))
+        f(time, model = "rw1", hyper = hyper, constr = FALSE) +
+        f(time2, w, copy = "time", fixed = FALSE, param = c(beta1_mean, beta1_prec))
       
     }
     
@@ -161,18 +152,7 @@ infer_coal_samp <- function(
   }
   
   if (is.null(rd_prob_fn)) {
-    mod <- INLA::inla(
-      formula, 
-      family = family, 
-      data = data,
-      lincomb = lc_many, 
-      offset = data$E_log,
-      control.predictor = list(compute = TRUE, link = link),
-      control.fixed = list(
-        mean = list(fn = fns_coeff_prior_mean, default = default_prior_mean),
-        prec = list(fn = fns_coeff_prior_prec, default = default_prior_prec)
-      )
-    )
+    offset <- data$E_log
     
   } else {
     data$log_rd_prob <- c(
@@ -180,16 +160,31 @@ infer_coal_samp <- function(
       log(rd_prob_fn(samp_data$time))
     )
     
+    offset <- data$E_log + data$log_rd_prob
+    
+  }
+    
+  if (is.null(fns)) {
     mod <- INLA::inla(
       formula, 
       family = family, 
       data = data,
       lincomb = lc_many, 
-      offset = data$E_log + data$rd_prob,
+      offset = offset,
+      control.predictor = list(compute = TRUE, link = link)
+    )
+    
+  } else {
+    mod <- INLA::inla(
+      formula, 
+      family = family, 
+      data = data,
+      lincomb = lc_many, 
+      offset = offset,
       control.predictor = list(compute = TRUE, link = link),
       control.fixed = list(
-        mean = list(fn = fns_coeff_prior_mean, default = default_prior_mean),
-        prec = list(fn = fns_coeff_prior_prec, default = default_prior_prec)
+        mean = list(default = fns_coeff_prior_mean),
+        prec = list(default = fns_coeff_prior_prec)
       )
     )
     

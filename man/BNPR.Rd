@@ -35,8 +35,8 @@ BNPR_PS(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-  fns_coeff_prior_mean = NULL,
-  fns_coeff_prior_prec = NULL,
+  fns_coeff_prior_mean = 0,
+  fns_coeff_prior_prec = 0.01,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -47,7 +47,6 @@ BNPR_PS_with_RD(
   data,
   historic_sample_time,
   historic_report_time,
-  max_time,
   rd_as_offset = TRUE,
   lengthout = 100,
   prec_alpha = 0.01,
@@ -56,8 +55,8 @@ BNPR_PS_with_RD(
   beta1_prec = 0.001,
   fns = NULL,
   log_fns = TRUE,
-  fns_coeff_prior_mean = NULL,
-  fns_coeff_prior_prec = NULL,
+  fns_coeff_prior_mean = 0,
+  fns_coeff_prior_prec = 0.01,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -103,8 +102,6 @@ the log-derivative as a forward or backward derivative.}
 \item{historic_sample_time}{numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)}
 
 \item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)}
-
-\item{max_time}{numeric; oldest sampling time in data}
 
 \item{rd_as_offset}{logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)}
 }

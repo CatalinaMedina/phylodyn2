@@ -2,6 +2,7 @@
 
 export(BNPR)
 export(BNPR_PS)
+export(BNPR_PS_with_RD)
 export(boombust_traj)
 export(bottleneck_traj)
 export(coalsim)
