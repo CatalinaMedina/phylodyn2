@@ -35,9 +35,6 @@
 #'   \item{derivative}{(if \code{derivative = TRUE}) contains a data frame summarizing the log-derivative}
 #'  }
 #'   
-#' @importFrom dplyr right_join
-#' @importFrom mgcv gam
-#'   
 #' @export
 #' 
 BNPR <- function(
@@ -168,58 +165,17 @@ BNPR_PS_with_RD <- function(
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1  
   ){
   
-  # Define reporting delay probability function from historic data
-  historic_data <- data.frame(
-    sample_time = historic_sample_time,
-    report_time = historic_report_time,
-    reported = historic_report_time >= 0 
-  )
-  
-  logistic_fit <- mgcv::gam(
-    formula = reported ~ s(sample_time), 
-    data = historic_data, 
-    family = "binomial"
-  )
-  
-  get_reported_prob <- function(sampling_times){
-    time_grid <- seq(0, max(sampling_times), length = lengthout)
-    midpoints <- time_grid[-lengthout] + diff(time_grid)/2
-    
-    reported_prob_int_df <- data.frame(
-      "interval" = cut(
-        x = midpoints, 
-        breaks = time_grid, 
-        right = FALSE,
-        include.lowest = TRUE
-      ),
-      "reported_prob" = predict(
-        logistic_fit, 
-        newdata = list("sample_time" = midpoints),
-        type = "response"
-      )
+  get_reported_prob_fn <- function(sampling_times) {
+    get_reported_prob(
+      sampling_times, 
+      historic_sample_time = historic_sample_time,
+      historic_report_time = historic_report_time,
+      lengthout = lengthout
     )
-    
-    sampling_time_int_df <- data.frame(
-      "sampling_time" = sampling_times,
-      "interval" = cut(
-        x = sampling_times, 
-        breaks = time_grid, 
-        right = FALSE,
-        include.lowest = TRUE
-      )
-    )
-      
-    joined_df <- dplyr::right_join(
-      reported_prob_int_df, 
-      sampling_time_int_df,
-      by = "interval"
-    )
-    
-    joined_df$reported_prob
   }
   
-  get_log_reported_prob <- function(sampling_times) {
-    log(get_reported_prob(sampling_times))
+  get_log_reported_prob_fn <- function(sampling_times) {
+    log(get_reported_prob_fn(sampling_times))
   }
   
   if (rd_as_offset) {
@@ -227,7 +183,7 @@ BNPR_PS_with_RD <- function(
       data = data, lengthout = lengthout, 
       prec_alpha = prec_alpha, prec_beta = prec_beta, 
       beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
-      rd_prob_fn = get_reported_prob, 
+      rd_prob_fn = get_reported_prob_fn, 
       fns = fns, log_fns = log_fns, 
       fns_coeff_prior_mean = fns_coeff_prior_mean, 
       fns_coeff_prior_prec = fns_coeff_prior_prec,
@@ -236,10 +192,14 @@ BNPR_PS_with_RD <- function(
     )
     
   } else {
+    if (!is.null(fns)) {
+      stop("We currently cannot handle reporting probability funciton in addition to other sampling intensity formula covariates.")
+    }
+    
     if (log_fns) {
-      fns_list <- list(get_reported_prob)
+      fns_list <- list(get_reported_prob_fn)
     } else {
-      fns_list <- list(get_log_reported_prob)
+      fns_list <- list(get_log_reported_prob_fn)
     }
     
     res <- BNPR_PS(
