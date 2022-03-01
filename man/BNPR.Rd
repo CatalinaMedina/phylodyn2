@@ -17,13 +17,8 @@ BNPR(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-<<<<<<< HEAD
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
-=======
   fns_coeff_prior_mean = NULL,
   fns_coeff_prior_prec = NULL,
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -40,13 +35,8 @@ BNPR_PS(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-<<<<<<< HEAD
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
-=======
   fns_coeff_prior_mean = 0,
   fns_coeff_prior_prec = 0.01,
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -65,13 +55,8 @@ BNPR_PS_with_RD(
   beta1_prec = 0.001,
   fns = NULL,
   log_fns = TRUE,
-<<<<<<< HEAD
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
-=======
-  fns_coeff_prior_mean = 0,
-  fns_coeff_prior_prec = 0.01,
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
+  fns_coeff_prior_mean = NULL,
+  fns_coeff_prior_prec = NULL,
   simplify = TRUE,
   derivative = FALSE,
   forward = TRUE,
@@ -101,15 +86,9 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
-<<<<<<< HEAD
-\item{log_fns_prior_mean}{value to specify mean for normal prior for fn coefficient}
-
-\item{log_fns_prior_prec}{value to specify precision for normal prior for fn coefficient}
-=======
 \item{fns_coeff_prior_mean}{value to specify mean for normal prior for fn coefficient}
 
 \item{fns_coeff_prior_prec}{value to specify precision for normal prior for fn coefficient}
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
@@ -146,10 +125,6 @@ Bayesian nonparametric phylodynamic reconstruction.
 \itemize{
 \item \code{BNPR_PS}: Uses preferential sampling model.
 
-<<<<<<< HEAD
 \item \code{BNPR_PS_with_RD}: Uses preferential sampling model and accounts for reporting delay.
-=======
-\item \code{BNPR_PS_with_RD}: Uses preferential sampling model with adjustment for reporting delay
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 }}
 

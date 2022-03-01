@@ -12,13 +12,8 @@ infer_coal_samp(
   rd_prob_fn = NULL,
   fns = NULL,
   log_fns = TRUE,
-<<<<<<< HEAD
-  log_fns_prior_mean = NULL,
-  log_fns_prior_prec = NULL,
-=======
   fns_coeff_prior_mean = NULL,
   fns_coeff_prior_prec = NULL,
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
   prec_alpha = 0.01,
   prec_beta = 0.01,
   beta1_mean = 0,
@@ -45,15 +40,9 @@ infer_coal_samp(
 
 \item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
-<<<<<<< HEAD
-\item{log_fns_prior_mean}{value to specify mean for normal prior for fn coefficient}
-
-\item{log_fns_prior_prec}{value to specify precision for normal prior for fn coefficient}
-=======
 \item{fns_coeff_prior_mean}{value to specify mean for normal prior for fn coefficient}
 
 \item{fns_coeff_prior_prec}{value to specify precision for normal prior for fn coefficient}
->>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 
 \item{prec_alpha}{numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior}
 
