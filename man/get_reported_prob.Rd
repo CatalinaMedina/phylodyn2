@@ -4,12 +4,16 @@
 \alias{get_reported_prob}
 \title{Returns probability of a collected sample having been reported by the analysis's time zero}
 \usage{
+<<<<<<< HEAD
 get_reported_prob(
   sampling_times,
   historic_sample_time,
   historic_report_time,
   lengthout
 )
+=======
+get_reported_prob(sampling_times, historic_sample_time, historic_report_time)
+>>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 }
 \arguments{
 \item{sampling_times}{numeric vector; sampling times}
@@ -17,12 +21,19 @@ get_reported_prob(
 \item{historic_sample_time}{numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)}
 
 \item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)}
+<<<<<<< HEAD
 
 \item{lengthout}{numeric; length of time grid which defines granularity of reported probabilities, same length as using in BNPR estimation}
+=======
+>>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 }
 \value{
 vector of probabilities of a sample having been reported by the analysis's time zero; given the sampling time
 }
 \description{
+<<<<<<< HEAD
 Returns probability of a collected sample having been reported by the analysis's time zero
+=======
+This is calculated by fitting a non parametric logistic regression with time as predictor
+>>>>>>> 691f48ebae82f06c5f16a87e4a4db8a031c74a14
 }

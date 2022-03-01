@@ -15,7 +15,7 @@ get_reported_prob <- function(
     historic_sample_time,
     historic_report_time,
     lengthout
-){
+  ){
   
   lengthout <- lengthout + 1 # To account for time zero
   
