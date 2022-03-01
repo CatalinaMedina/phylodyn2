@@ -7,6 +7,8 @@
 #' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
+#' @param log_fns_prior_mean value to specify mean for normal prior for fn coefficient
+#' @param log_fns_prior_prec value to specify precision for normal prior for fn coefficient
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
@@ -37,6 +39,9 @@ infer_coal_samp <- function(
   use_samp = FALSE, simplify = FALSE, 
   events_only = FALSE, derivative = FALSE, link = 1 
 ){
+  
+  default_prior_mean <- 0
+  default_prior_prec <- 0.01
   
   if (!requireNamespace("INLA", quietly = TRUE)) {
     stop(
@@ -108,13 +113,10 @@ infer_coal_samp <- function(
         f(time2, w, copy="time", fixed=FALSE, param=c(beta1_mean, beta1_prec))
       
     } else {
-      default_prior_mean <- 0
-      default_prior_prec <- 0.01
-      
       if (is.null(log_fns_prior_mean) ) {
-        log_fns_prior_mean <- default_log_fns_mean
+        log_fns_prior_mean <- default_prior_mean
       } else if (is.null(log_fns_prior_prec)) {
-        log_fns_prior_prec <- default_log_fns_prec
+        log_fns_prior_prec <- default_prior_prec
       }
       
       vals <- NULL
