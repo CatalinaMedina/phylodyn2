@@ -148,3 +148,44 @@ BNPR_PS <- function(
   )
   
 }
+
+
+#' @describeIn BNPR Uses preferential sampling model and accounts for reporting delay.
+#' @export
+BNPR_PS_with_RD <- function(
+    data, 
+    historic_sample_time,
+    historic_report_time,
+    rd_as_offset = TRUE, lengthout = 100, 
+    prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
+    fns = NULL, log_fns = TRUE, 
+    log_fns_prior_mean = NULL, log_fns_prior_prec = NULL,
+    simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
+){
+ 
+  rd_fn <- function(sampling_times){
+    get_reported_prob(
+      sampling_times = sampling_times, 
+      historic_sample_time = historic_sample_time,
+      historic_report_time = historic_report_time,
+      lengthout = lengthout
+    )
+  }
+  
+  if (rd_as_offset) {
+    res <- BNPR_PS(
+      data, lengthout = lengthout, 
+      prec_alpha = prec_alpha, prec_beta = prec_beta, 
+      beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
+      rd_prob_fn = rd_fn, 
+      fns = fns, log_fns = log_fns, 
+      log_fns_prior_mean = log_fns_prior_mean, 
+      log_fns_prior_prec = log_fns_prior_prec,
+      simplify = simplify, derivative = derivative, forward = forward, link = link
+    )
+  } else {
+    stop("BNPR_PS_with_RD cannot handle rd as fn yet")
+  }
+  
+  res
+}
