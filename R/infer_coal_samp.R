@@ -161,7 +161,7 @@ infer_coal_samp <- function(
   }
   
   if (is.null(rd_prob_fn)) {
-    offset <- data$E_log
+    regression_offset <- data$E_log
     
   } else {
     data$log_rd_prob <- c(
@@ -169,7 +169,7 @@ infer_coal_samp <- function(
       log(rd_prob_fn(samp_data$time))
     )
     
-    offset <- data$E_log + data$log_rd_prob
+    regression_offset <- data$E_log + data$log_rd_prob
     
   }
     
@@ -179,7 +179,7 @@ infer_coal_samp <- function(
       family = family, 
       data = data,
       lincomb = lc_many, 
-      offset = offset,
+      offset = regression_offset,
       control.predictor = list(compute = TRUE, link = link)
     )
     
@@ -189,7 +189,7 @@ infer_coal_samp <- function(
       family = family, 
       data = data,
       lincomb = lc_many, 
-      offset = offset,
+      offset = regression_offset,
       control.predictor = list(compute = TRUE, link = link),
       control.fixed = list(
         mean = list(default = fns_coeff_prior_mean),
