@@ -187,7 +187,19 @@ BNPR_PS_with_RD <- function(
       simplify = simplify, derivative = derivative, forward = forward, link = link
     )
   } else {
-    stop("BNPR_PS_with_RD cannot handle rd as fn yet")
+    warning(
+      "BNPR_PS_with_RD cannot currently handle rd as fn with other covariates, other covariate will be ignored."
+    )
+    
+    res <- BNPR_PS(
+      data, lengthout = lengthout, 
+      prec_alpha = prec_alpha, prec_beta = prec_beta, 
+      beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
+      fns = list(rd_fn), log_fns = TRUE, 
+      fns_coeff_prior_mean = 1, 
+      fns_coeff_prior_prec = 1000,
+      simplify = simplify, derivative = derivative, forward = forward, link = link
+    )
 
   }
   
