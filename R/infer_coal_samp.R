@@ -40,15 +40,20 @@ infer_coal_samp <- function(
   events_only = FALSE, derivative = FALSE, link = 1 
 ){
   
-  default_prior_mean <- 0
-  default_prior_prec <- 0.01
-  
   if (!requireNamespace("INLA", quietly = TRUE)) {
     stop(
       'INLA needed for this function to work. Use install.packages("INLA", repos=c(getOption("repos"), INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE).',
       call. = FALSE
     )
     
+  }
+  
+  if (!is.null(fns)) {
+    if (is.null(fns_coeff_prior_mean) || is.null(fns_coeff_prior_prec)) {
+      stop(
+        "Please specify the mean and precision for the normal prior for fns"
+      )
+    }
   }
   
   if (min(coal_times) < min(samp_times)) {
@@ -110,25 +115,26 @@ infer_coal_samp <- function(
     if (is.null(fns)) {
       formula <- Y ~ -1 + beta0 +
         f(time, model="rw1", hyper = hyper, constr = FALSE) +
-        f(time2, w, copy="time", fixed=FALSE, param=c(beta1_mean, beta1_prec))
+        f(time2, w, copy="time", fixed = FALSE, param = c(beta1_mean, beta1_prec))
       
     } else {
-      if (is.null(fns_coeff_prior_mean) ) {
-        fns_coeff_prior_mean <- default_prior_mean
-      } else if (is.null(fns_coeff_prior_mean)) {
-        fns_coeff_prior_mean <- default_prior_prec
-      }
-
       vals <- NULL
       bins <- sum(data$beta0 == 0)
       
       for (fni in fns) {
         if (log_fns) {
-          vals <- cbind(vals, c(rep(0, bins), log(fni(samp_data$time))))
+          vals <- cbind(
+            vals, 
+            c(rep(0, bins), log(fni(samp_data$time)))
+          )
+          
         } else {
-          vals <- cbind(vals, c(rep(0, bins), fni(samp_data$time)))
+          vals <- cbind(
+            vals, 
+            c(rep(0, bins), fni(samp_data$time))
+          )
+          
         }
-        
       }
       
       data$fn <- vals
