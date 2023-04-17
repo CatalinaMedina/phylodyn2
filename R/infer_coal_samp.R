@@ -7,8 +7,8 @@
 #' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values
-#' @param fns_coeff_prior_mean value to specify mean for normal prior for fn coefficient
-#' @param fns_coeff_prior_prec value to specify precision for normal prior for fn coefficient
+#' @param fns_coeff_prior_mean numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns
+#' @param fns_coeff_prior_prec numeric vector; normal prior precision for fns coefficient(s). If non NULL, must match length of fns
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
@@ -46,14 +46,6 @@ infer_coal_samp <- function(
       call. = FALSE
     )
     
-  }
-  
-  if (!is.null(fns)) {
-    if (is.null(fns_coeff_prior_mean) || is.null(fns_coeff_prior_prec)) {
-      stop(
-        "Please specify the mean and precision for the normal prior for fns"
-      )
-    }
   }
   
   if (min(coal_times) < min(samp_times)) {
@@ -139,10 +131,30 @@ infer_coal_samp <- function(
       
       data$fn <- vals
       
+      if ("rd_fn" %in% names(fns_coeff_prior_mean)) {# already in correct format
+        colnames(data$fn) <- c("rd_fn" , paste0("fn", 1:(ncol(vals) - 1)))
+        
+      } else {
+        colnames(data$fn) <- paste0("fn", 1:ncol(vals))
+        
+        if (!is.null(fns_coeff_prior_mean)) {
+          names(fns_coeff_prior_mean) <- c(paste0("fn", 1:(length(fns_coeff_prior_mean))))
+          fns_coeff_prior_mean <- as.list(fns_coeff_prior_mean)
+        }
+        
+        if (!is.null(fns_coeff_prior_prec)) {
+          names(fns_coeff_prior_prec) <- c(paste0("fn", 1:(length(fns_coeff_prior_prec))))
+          fns_coeff_prior_prec <- as.list(fns_coeff_prior_prec)
+        }
+        
+        fns_coeff_prior_mean <- c(fns_coeff_prior_mean, list(default = 0))
+        fns_coeff_prior_prec <- c(fns_coeff_prior_prec, list(default = 0.001))
+      }
+      
       formula <- Y ~ -1 + beta0 + fn +
         f(time, model = "rw1", hyper = hyper, constr = FALSE) +
         f(time2, w, copy = "time", fixed = FALSE, param = c(beta1_mean, beta1_prec))
-      
+     
     }
     
     family <- c("poisson", "poisson")
@@ -198,8 +210,8 @@ infer_coal_samp <- function(
       offset = regression_offset,
       control.predictor = list(compute = TRUE, link = link),
       control.fixed = list(
-        mean = list(default = fns_coeff_prior_mean),
-        prec = list(default = fns_coeff_prior_prec)
+        mean = fns_coeff_prior_mean,
+        prec = fns_coeff_prior_prec
       )
     )
     
