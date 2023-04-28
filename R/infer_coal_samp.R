@@ -132,7 +132,11 @@ infer_coal_samp <- function(
       data$fn <- vals
       
       if ("rd_fn" %in% names(fns_coeff_prior_mean)) {# already in correct format
-        colnames(data$fn) <- c("rd_fn" , paste0("fn", 1:(ncol(vals) - 1)))
+        if (ncol(vals) == 1) {
+          colnames(data$fn) <- c("rd_fn")
+        } else {
+          colnames(data$fn) <- c("rd_fn" , paste0("fn", 1:(ncol(vals) - 1)))
+        }
         
       } else {
         colnames(data$fn) <- paste0("fn", 1:ncol(vals))
