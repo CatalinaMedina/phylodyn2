@@ -202,24 +202,24 @@ BNPR_PS_with_RD <- function(
     
     fns <- c(list(rd_fn), fns)
     
-    if (!is.null(fns) & length(fns_coeff_prior_mean) > 1) {
+    if (length(fns) > 1 & length(fns_coeff_prior_mean) > 1) {
       names(fns_coeff_prior_mean) <- c(
         "rd_fn",
         paste0("fn", 1:(length(fns_coeff_prior_mean) - 1))
       )
       
-      if(length(fns) != (length(fns_coeff_prior_mean) - 1)){
+      if(length(fns) != length(fns_coeff_prior_mean)){
         warning("length(fns_coeff_prior_mean) must equal length(fns) if nonNULL")
       }
     }
     
-    if (!is.null(fns) & length(fns_coeff_prior_prec) > 1) {
+    if (length(fns) > 1 & length(fns_coeff_prior_prec) > 1) {
       names(fns_coeff_prior_prec) <- c(
         "rd_fn",
         paste0("fn", 1:(length(fns_coeff_prior_prec) - 1))
       )
       
-      if(length(fns) != (length(fns_coeff_prior_prec) - 1)){
+      if(length(fns) != length(fns_coeff_prior_prec) - 1){
         warning("length(fns_coeff_prior_prec) must equal length(fns) if nonNULL")
       }
     }
@@ -230,7 +230,8 @@ BNPR_PS_with_RD <- function(
     res <- BNPR_PS(
       data, lengthout = lengthout, 
       prec_alpha = prec_alpha, prec_beta = prec_beta, 
-      beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
+      beta1_mean = beta1_mean, beta1_prec = beta1_prec,
+      rd_prob_fn = NULL,
       fns = fns, log_fns = log_fns, 
       fns_coeff_prior_mean = fns_coeff_prior_mean, 
       fns_coeff_prior_prec = fns_coeff_prior_prec,
