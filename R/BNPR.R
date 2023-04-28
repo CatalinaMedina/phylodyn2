@@ -190,11 +190,8 @@ BNPR_PS_with_RD <- function(
       simplify = simplify, derivative = derivative, 
       forward = forward, link = link
     )
-  } else {
-    warning(
-      "BNPR_PS_with_RD cannot currently handle rd as fn with other covariates, other covariate will be ignored."
-    )
     
+  } else {
     rd_fn_mean <- 1
     rd_fn_prec <- 1000
     
@@ -205,24 +202,24 @@ BNPR_PS_with_RD <- function(
     
     fns <- c(list(rd_fn), fns)
     
-    if (!is.null(fns) & !is.null(fns_coeff_prior_mean)) {
+    if (!is.null(fns) & length(fns_coeff_prior_mean) > 1) {
       names(fns_coeff_prior_mean) <- c(
         "rd_fn",
         paste0("fn", 1:(length(fns_coeff_prior_mean) - 1))
       )
       
-      if(length(fns) != length(fns_coeff_prior_mean)){
+      if(length(fns) != (length(fns_coeff_prior_mean) - 1)){
         warning("length(fns_coeff_prior_mean) must equal length(fns) if nonNULL")
       }
     }
     
-    if (!is.null(fns) & !is.null(fns_coeff_prior_prec)) {
+    if (!is.null(fns) & length(fns_coeff_prior_prec) > 1) {
       names(fns_coeff_prior_prec) <- c(
         "rd_fn",
         paste0("fn", 1:(length(fns_coeff_prior_prec) - 1))
       )
       
-      if(length(fns) != length(fns_coeff_prior_prec)){
+      if(length(fns) != (length(fns_coeff_prior_prec) - 1)){
         warning("length(fns_coeff_prior_prec) must equal length(fns) if nonNULL")
       }
     }
@@ -230,13 +227,11 @@ BNPR_PS_with_RD <- function(
     fns_coeff_prior_mean$default <- 0
     fns_coeff_prior_prec$default <- 0.001
     
-    # Throw error is !is.null(fns_coeff_prior_mean) and length(fns) != length(fns_coeff_prior_mean)
-    
     res <- BNPR_PS(
       data, lengthout = lengthout, 
       prec_alpha = prec_alpha, prec_beta = prec_beta, 
       beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
-      fns = list(rd_fn), log_fns = log_fns, 
+      fns = fns, log_fns = log_fns, 
       fns_coeff_prior_mean = fns_coeff_prior_mean, 
       fns_coeff_prior_prec = fns_coeff_prior_prec,
       simplify = simplify, derivative = derivative, 
