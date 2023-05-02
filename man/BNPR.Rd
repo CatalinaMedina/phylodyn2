@@ -48,6 +48,7 @@ BNPR_PS_with_RD(
   historic_sample_time,
   historic_report_time,
   rd_as_offset = TRUE,
+  time_zero_offset_from_sim_rd = NULL,
   lengthout = 100,
   prec_alpha = 0.01,
   prec_beta = 0.01,
@@ -84,11 +85,11 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{fns}{function; list of covariate functions for the sampling intensity}
 
-\item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
+\item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covriate function already returns log transformed values}
 
-\item{fns_coeff_prior_mean}{value to specify mean for normal prior for fn coefficient}
+\item{fns_coeff_prior_mean}{numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns}
 
-\item{fns_coeff_prior_prec}{value to specify precision for normal prior for fn coefficient}
+\item{fns_coeff_prior_prec}{numeric vector; normal prior precision for fns coefficient(s). If non NULL, must match length of fns}
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
@@ -104,6 +105,8 @@ the log-derivative as a forward or backward derivative.}
 \item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)}
 
 \item{rd_as_offset}{logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)}
+
+\item{time_zero_offset_from_sim_rd}{numeric; For BNPR_PS_with_RD only. The time between the first reported sampling time and the true first sampling time, time zero, in the case of simulating reporting delays. Generally should be left as NULL. Time zero is considered to be the first sampling time, but when simulating reporting delays and dropping tips from the tree, time zero shifts to the first reported sampling time.}
 }
 \value{
 Phylodynamic reconstruction of effective population size at grid points:\describe{ 
@@ -123,8 +126,8 @@ Bayesian nonparametric phylodynamic reconstruction.
 }
 \section{Functions}{
 \itemize{
-\item \code{BNPR_PS}: Uses preferential sampling model.
+\item \code{BNPR_PS()}: Uses preferential sampling model.
 
-\item \code{BNPR_PS_with_RD}: Uses preferential sampling model and accounts for reporting delay.
+\item \code{BNPR_PS_with_RD()}: Uses preferential sampling model and accounts for reporting delay.
+
 }}
-
