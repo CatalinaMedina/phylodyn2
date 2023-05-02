@@ -64,5 +64,7 @@ get_reported_prob <- function(
     by = "interval"
   )
   
+  joined_df$reported_prob[joined_df$reported_prob == 0] <- 0.0001
+  
   joined_df$reported_prob
 }
