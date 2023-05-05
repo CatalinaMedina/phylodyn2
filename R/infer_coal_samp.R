@@ -357,10 +357,10 @@ condense_stats <- function(time, event, E, log_zero = -100){
 #' @importFrom utils head
 #'
 #' @return data frame with \describe{
-#'   \item{coal_factor}{TODO}
+#'   \item{coal_factor}{Number of active lineages choose 2}
 #'   \item{s}{sampling and coalescence times combined and sorted} 
-#'   \item{event}{TODO}
-#'   \item{lineages}{TODO}
+#'   \item{event}{Boolean vector with 0 = sampling time and 1 = coalescent time}
+#'   \item{lineages}{numeric vector of number of active lineages}
 #' }
 #'
 gen_INLA_args <- function(samp_times, n_sampled, coal_times)
@@ -377,9 +377,9 @@ gen_INLA_args <- function(samp_times, n_sampled, coal_times)
   m <- length(coal_times)
   sorting <- sort(c(samp_times, coal_times), index.return=TRUE)
   
-  lineage_change <- c(n_sampled, rep(-1, m))[sorting$ix]
+  lineage_change <- c(n_sampled, rep(-1, m))[sorting$ix] # change in number of active lineages (coalescent event results in -1)
   lineages <- utils::head(cumsum(lineage_change), -1) # remove entry for the post-final-coalescent-event open interval
-  coal_factor <- lineages * (lineages - 1) / 2
+  coal_factor <- lineages * (lineages - 1) / 2 # Number of active lineages choose 2
   
   event <- c(rep(0, l), rep(1, m))[sorting$ix]
   
@@ -432,18 +432,18 @@ coal_stats <- function(
   )
   
   coal_factor <- args$coal_factor
-  s <- args$s
-  event <- args$event
+  s <- args$s # combined and sorted sampling and colescent times
+  event <- args$event # 0 = sampling time, 1 = coalescent time
   
-  grid_trimmed <- setdiff(x = grid, y = s)
+  grid_trimmed <- setdiff(x = grid, y = s) # keep elements in x not in y
   sorting <- sort(c(grid_trimmed, s), index.return=TRUE)
   sgrid <- sorting$x
   ordering <- sorting$ix
   
-  time_index <- cut(x = sgrid[-1], breaks = grid, labels = FALSE)
-  time <- field[time_index]
+  time_index <- cut(x = sgrid[-1], breaks = grid, labels = FALSE) # identify interval
+  time <- field[time_index] # repeat grid midpoints for # of times sampling, coalescent, and or grid point falls in interval
   
-  event_out <- c(rep(0, length(grid_trimmed)), event)[ordering]
+  event_out <- c(rep(0, length(grid_trimmed)), event)[ordering] # 0 = grid or sampling time, 1 = coalescent
   
   Cfun <- stats::stepfun(x = s, y = c(0, coal_factor, 0), right = TRUE)
   Cvec <- Cfun(sgrid[-1])
