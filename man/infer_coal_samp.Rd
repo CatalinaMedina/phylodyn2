@@ -38,7 +38,7 @@ infer_coal_samp(
 
 \item{fns}{function; list of covariate functions for the sampling intensity}
 
-\item{log_fns}{Boolean; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
+\item{log_fns}{logical; specifies if the log of the covariate functions, fns, needs to be take. FALSE indicates that the covriate function already returns log transformed values}
 
 \item{fns_coeff_prior_mean}{numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns}
 
@@ -52,11 +52,11 @@ infer_coal_samp(
 
 \item{beta1_prec}{numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula}
 
-\item{use_samp}{Boolean; TODO}
+\item{use_samp}{logical; Indicates if the preferential sampling model should be used}
 
 \item{simplify}{logical whether to fully bucket all Poisson points.}
 
-\item{events_only}{Boolean; TODO}
+\item{events_only}{logical; TODO}
 
 \item{derivative}{logical whether to calculate estimates of the log-derivative.}
 

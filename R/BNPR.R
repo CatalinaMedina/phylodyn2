@@ -4,10 +4,10 @@
 #'   times \code{coal_times}, sampling times \code{samp_times}, and number 
 #'   sampled per sampling time \code{n_sampled}.
 #' @param lengthout numeric specifying number of grid points.
-#' @param pref logical. Should the preferential sampling model be used? If so use BNPR_PS for a better report of estimation
+#' @param pref logical; Indicates if the preferential sampling model be used. If so use BNPR_PS for a better report of estimation
 #' @param historic_sample_time numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)
 #' @param historic_report_time numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)
-#' @param rd_as_offset logical whether reporting delay adjustment should be implememented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
+#' @param rd_as_offset logical whether reporting delay adjustment should be implemented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
@@ -15,7 +15,7 @@
 #' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
 #' @param time_zero_offset_from_sim_rd numeric; For BNPR_PS_with_RD only. The time between the first reported sampling time and the true first sampling time, time zero, in the case of simulating reporting delays. Generally should be left as NULL. Time zero is considered to be the first sampling time, but when simulating reporting delays and dropping tips from the tree, time zero shifts to the first reported sampling time. 
 #' @param fns function; list of covariate functions for the sampling intensity
-#' @param log_fns Boolean; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covriate function already returns log transformed values
+#' @param log_fns logical; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covriate function already returns log transformed values
 #' @param fns_coeff_prior_mean numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns
 #' @param fns_coeff_prior_prec numeric vector; normal prior precision for fns coefficient(s). If non NULL, must match length of fns
 #' @param simplify logical whether to fully bucket all Poisson points.
