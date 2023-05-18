@@ -188,7 +188,7 @@ infer_coal_samp <- function(
   } else {
     data$log_rd_prob <- c(
       rep(0, length(coal_data$time)),
-      log(rd_prob_fn(samp_data$time))
+      rd_prob_fn(samp_data$time)
     )
     
     regression_offset <- data$E_log + data$log_rd_prob
