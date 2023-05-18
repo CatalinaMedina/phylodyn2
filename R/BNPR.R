@@ -5,17 +5,13 @@
 #'   sampled per sampling time \code{n_sampled}.
 #' @param lengthout numeric specifying number of grid points.
 #' @param pref logical; Indicates if the preferential sampling model be used. If so use BNPR_PS for a better report of estimation
-#' @param historic_sample_time numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)
-#' @param historic_report_time numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)
-#' @param rd_as_offset logical whether reporting delay adjustment should be implemented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
 #' @param beta1_prec numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
-#' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported
-#' @param time_zero_offset_from_sim_rd numeric; For BNPR_PS_with_RD only. The time between the first reported sampling time and the true first sampling time, time zero, in the case of simulating reporting delays. Generally should be left as NULL. Time zero is considered to be the first sampling time, but when simulating reporting delays and dropping tips from the tree, time zero shifts to the first reported sampling time. 
+#' @param rd_prob_fn function; a function that takes in a vector of sampling times and returns the probability of a collected sample having been reported. Should only specified by BNPR_PS_with_RD.
 #' @param fns function; list of covariate functions for the sampling intensity
-#' @param log_fns logical; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covriate function already returns log transformed values
+#' @param log_fns logical; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covariate function already returns log transformed values
 #' @param fns_coeff_prior_mean numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns
 #' @param fns_coeff_prior_prec numeric vector; normal prior precision for fns coefficient(s). If non NULL, must match length of fns
 #' @param simplify logical whether to fully bucket all Poisson points.
@@ -153,106 +149,4 @@ BNPR_PS <- function(
     forward = forward, link = link
   )
   
-}
-
-
-#' @describeIn BNPR Uses preferential sampling model and accounts for reporting delay.
-#' @export
-BNPR_PS_with_RD <- function(
-    data, 
-    historic_sample_time,
-    historic_report_time,
-    rd_as_offset = TRUE, time_zero_offset_from_sim_rd = NULL,
-    lengthout = 100, 
-    prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
-    fns = NULL, log_fns = TRUE, 
-    fns_coeff_prior_mean = NULL, fns_coeff_prior_prec = NULL,
-    simplify = TRUE, derivative = FALSE, 
-    forward = TRUE, link = 1
-){
-  
-  if (is.null(time_zero_offset_from_sim_rd)) {
-    time_zero_offset_from_sim_rd <- 0
-  } else if (
-    !is.numeric(time_zero_offset_from_sim_rd) | 
-    length(time_zero_offset_from_sim_rd) != 1
-  ) {
-    stop("time_zero_offset_from_sim_rd must be NULL or a single numeric")
-  }
- 
-  rd_fn <- function(sampling_times){
-    adj_samp_times <- sampling_times + time_zero_offset_from_sim_rd
-    
-    get_reported_prob(
-      sampling_times = adj_samp_times, 
-      historic_sample_time = historic_sample_time,
-      historic_report_time = historic_report_time,
-      lengthout = lengthout
-    )
-  }
-  
-  if (rd_as_offset) {
-    res <- BNPR_PS(
-      data, lengthout = lengthout, 
-      prec_alpha = prec_alpha, prec_beta = prec_beta, 
-      beta1_mean = beta1_mean, beta1_prec = beta1_prec, 
-      rd_prob_fn = rd_fn, 
-      fns = fns, log_fns = log_fns, 
-      fns_coeff_prior_mean = fns_coeff_prior_mean, 
-      fns_coeff_prior_prec = fns_coeff_prior_prec,
-      simplify = simplify, derivative = derivative, 
-      forward = forward, link = link
-    )
-    
-  } else {
-    rd_fn_mean <- 1
-    rd_fn_prec <- 1000
-    
-    fns_coeff_prior_mean <- c(list(rd_fn = rd_fn_mean), as.list(fns_coeff_prior_mean))
-    fns_coeff_prior_prec <- c(list(rd_fn = rd_fn_mean), as.list(fns_coeff_prior_prec))
-    
-    if (!log_fns) rd_fn <- function(x){log(rd_fn(x))}
-    
-    fns <- c(list(rd_fn), fns)
-    
-    if (length(fns) > 1 & length(fns_coeff_prior_mean) > 1) {
-      names(fns_coeff_prior_mean) <- c(
-        "rd_fn",
-        paste0("fn", 1:(length(fns_coeff_prior_mean) - 1))
-      )
-      
-      if(length(fns) != length(fns_coeff_prior_mean)){
-        stop("length(fns_coeff_prior_mean) must equal length(fns) if nonNULL")
-      }
-    }
-    
-    if (length(fns) > 1 & length(fns_coeff_prior_prec) > 1) {
-      names(fns_coeff_prior_prec) <- c(
-        "rd_fn",
-        paste0("fn", 1:(length(fns_coeff_prior_prec) - 1))
-      )
-      
-      if(length(fns) != length(fns_coeff_prior_prec) - 1){
-        stop("length(fns_coeff_prior_prec) must equal length(fns) if nonNULL")
-      }
-    }
-    
-    fns_coeff_prior_mean$default <- 0
-    fns_coeff_prior_prec$default <- 0.001
-    
-    res <- BNPR_PS(
-      data, lengthout = lengthout, 
-      prec_alpha = prec_alpha, prec_beta = prec_beta, 
-      beta1_mean = beta1_mean, beta1_prec = beta1_prec,
-      rd_prob_fn = NULL,
-      fns = fns, log_fns = log_fns, 
-      fns_coeff_prior_mean = fns_coeff_prior_mean, 
-      fns_coeff_prior_prec = fns_coeff_prior_prec,
-      simplify = simplify, derivative = derivative, 
-      forward = forward, link = link
-    )
-
-  }
-  
-  res
 }
