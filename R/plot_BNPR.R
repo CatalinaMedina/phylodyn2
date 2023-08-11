@@ -10,7 +10,7 @@
 #' @param lwd line width for estimated trajectory.
 #' @param col color for estimated trajectory.
 #' @param main character main plot title.
-#' @param log character which axes to plot log-scale. Defaults to "y".
+#' @param log_y boolean whether to plot y coordinates on log scale.
 #' @param ylab character y-axis label.
 #' @param xlab character x-axis label.
 #' @param xmarline numeric if not using default x-axis labels, how far to put 
@@ -35,7 +35,7 @@
 #' @export
 plot_BNPR <- function(
     BNPR_out, traj = NULL, xlim = NULL, ylim = NULL, nbreaks = 40,
-    lty = 1, lwd = 2, col = "black", main = "", log = "y",
+    lty = 1, lwd = 2, col = "black", main = "", log_y = TRUE,
     ylab = "Effective Population Size",
     xlab = "Time", xmarline = 3, axlabs = NULL,
     traj_lty = 2, traj_lwd = 2, traj_col = col,
@@ -81,20 +81,42 @@ plot_BNPR <- function(
     }
     
     if (is.null(axlabs)) {
-      graphics::plot(
-        1, 1, type = "n", log = log,
-        xlab = xlab, ylab = ylab, main = main,
-        xlim = xlim, ylim = ylim, ...
-      )
+      if (log_y) {
+        graphics::plot(
+          1, 1, type = "n", log = log,
+          xlab = xlab, ylab = ylab, main = main,
+          xlim = xlim, ylim = ylim, ...
+        )
+        
+      } else {
+        graphics::plot(
+          1, 1, type = "n",
+          xlab = xlab, ylab = ylab, main = main,
+          xlim = xlim, ylim = ylim, ...
+        )
+        
+      }
       
     } else {
-      graphics::plot(
-        1, 1, type = "n", log = log,
-        xlab = "", ylab = ylab, main = main,
-        xlim = xlim, ylim = ylim, xaxt = "n", ...
-      )
-      graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
-      graphics::mtext(text = xlab, side = 1, line = xmarline)
+      if (log_y) {
+        graphics::plot(
+          1, 1, type = "n", log = log,
+          xlab = "", ylab = ylab, main = main,
+          xlim = xlim, ylim = ylim, xaxt = "n", ...
+        )
+        graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
+        graphics::mtext(text = xlab, side = 1, line = xmarline)
+        
+      } else {
+        graphics::plot(
+          1, 1, type = "n",
+          xlab = "", ylab = ylab, main = main,
+          xlim = xlim, ylim = ylim, xaxt = "n", ...
+        )
+        graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
+        graphics::mtext(text = xlab, side = 1, line = xmarline)
+        
+      }
       
     }
     

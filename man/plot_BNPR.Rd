@@ -14,7 +14,7 @@ plot_BNPR(
   lwd = 2,
   col = "black",
   main = "",
-  log = "y",
+  log_y = TRUE,
   ylab = "Effective Population Size",
   xlab = "Time",
   xmarline = 3,
@@ -53,7 +53,7 @@ trajectory.}
 
 \item{main}{character main plot title.}
 
-\item{log}{character which axes to plot log-scale. Defaults to "y".}
+\item{log_y}{boolean whether to plot y coordinates on log scale.}
 
 \item{ylab}{character y-axis label.}
 
