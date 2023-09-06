@@ -4,8 +4,7 @@
 #'   times \code{coal_times}, sampling times \code{samp_times}, and number 
 #'   sampled per sampling time \code{n_sampled}.
 #' @param lengthout numeric specifying number of grid points.
-#' @param historic_sample_time numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)
-#' @param historic_report_time numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)
+#' @param historic_reporting_delays numeric vector with historic reporting delays. This must be on in the same units as time grid with all nonnegative values. (sequencing data bases can be useful for obtaining such data for a given location)
 #' @param rd_as_offset logical whether reporting delay adjustment should be implemented as offset (TRUE), or as a covariate function with a steep prior (FALSE)
 #' @param prec_alpha numeric; hyperparameter alpha for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
@@ -39,8 +38,7 @@
 #' 
 BNPR_PS_with_RD <- function(
     data, 
-    historic_sample_time,
-    historic_report_time,
+    historic_reporting_delays,
     rd_as_offset = TRUE, time0_offset_from_sim_rd = NULL,
     lengthout = 100, 
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
@@ -70,8 +68,7 @@ BNPR_PS_with_RD <- function(
   rd_fn_will_be_logged_later <- !rd_as_offset & log_fns
   
   rd_fn <- get_reported_prob_fn(
-    historic_sample_time = historic_sample_time,
-    historic_report_time = historic_report_time,
+    historic_reporting_delays = historic_reporting_delays,
     time_grid = grid,
     return_log_rd_fn = !rd_fn_will_be_logged_later
   )

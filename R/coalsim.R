@@ -53,7 +53,11 @@ coalsim <- function(
 #'   point for its dynamic numerical integration upper bound. 
 #' @param ... additional arguments to be passed to \code{traj} function 
 #' 
-#' @import stats
+#' @importFrom stats is.stepfun
+#' @importFrom stats stepfun
+#' @importFrom stats integrate
+#' @importFrom stats rexp
+#' @importFrom stats uniroot
 #'
 #' @return A list containing vectors of coalescent times \code{coal_times}, 
 #'   intercoalescent times \code{intercoal_times}, and number of active lineages
@@ -180,7 +184,8 @@ coalsim_tt <- function(samp_times, n_sampled, traj, val_upper = 10, ...){
 #'   support.  Used only by thinning method.
 #' @param ... additional arguments to be passed to \code{traj} function 
 #' 
-#' @import stats
+#' @importFrom stats rexp
+#' @importFrom stats runif
 #' 
 #' @return A list containing vectors of coalescent times \code{coal_times}, 
 #'   intercoalescent times \code{intercoal_times}, and number of active lineages

@@ -5,23 +5,20 @@
 \title{Get reported probability function}
 \usage{
 get_reported_prob_fn(
-  historic_sample_time,
-  historic_report_time,
+  historic_reporting_delays,
   time_grid,
   return_log_rd_fn = TRUE,
-  min_probability = 1e-04
+  min_probability = 1e-05
 )
 }
 \arguments{
-\item{historic_sample_time}{numeric vector with historic times samples were collected (sequencing data bases can be useful for obtaining such data for a given location)}
-
-\item{historic_report_time}{numeric vector with historic times sequenced samples were reported (sequencing data bases can be useful for obtaining such data for a given location)}
+\item{historic_reporting_delays}{numeric vector with historic reporting delays. This must be on in the same units as time grid with all nonnegative values. (sequencing data bases can be useful for obtaining such data for a given location)}
 
 \item{time_grid}{numeric vector; regular time grid used in BNPR estimation}
 
 \item{return_log_rd_fn}{logical indicating if function should return log probabilities. This should be FALSE only if the reporting delay probability is being incorporated as a covariate and the log will be calculated in infer_coal_samp()}
 
-\item{min_probability}{minimum probability of being reported, should never be exactly 0 since it will be logged,}
+\item{min_probability}{minimum probability of being reported, should never be exactly 0 since it will be logged.}
 }
 \value{
 function that returns vector of probabilities of a sample having been reported by the analysis's time zero; given the sampling time

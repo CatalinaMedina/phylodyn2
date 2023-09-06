@@ -6,8 +6,7 @@
 \usage{
 BNPR_PS_with_RD(
   data,
-  historic_sample_time,
-  historic_report_time,
+  historic_reporting_delays,
   rd_as_offset = TRUE,
   time0_offset_from_sim_rd = NULL,
   lengthout = 100,
@@ -30,9 +29,7 @@ BNPR_PS_with_RD(
 times \code{coal_times}, sampling times \code{samp_times}, and number 
 sampled per sampling time \code{n_sampled}.}
 
-\item{historic_sample_time}{numeric vector with historic times samples were collected (GISAID data base can be useful for obtaining such data for a given location)}
-
-\item{historic_report_time}{numeric vector with historic times sequenced samples were reported (GISAID data base can be useful for obtaining such data for a given location)}
+\item{historic_reporting_delays}{numeric vector with historic reporting delays. This must be on in the same units as time grid with all nonnegative values. (sequencing data bases can be useful for obtaining such data for a given location)}
 
 \item{rd_as_offset}{logical whether reporting delay adjustment should be implemented as offset (TRUE), or as a covariate function with a steep prior (FALSE)}
 

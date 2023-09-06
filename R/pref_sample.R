@@ -12,7 +12,8 @@
 #' @param grid.len integer if upper is undefined, automatically evaluates f at
 #'   grid.len points between min(lim) and max(lim) to find upper bound.
 #'
-#' @import stats
+#' @importFrom stats rpois
+#' @importFrom stats runif
 #' 
 #' @return numeric vector of sampling times
 #'

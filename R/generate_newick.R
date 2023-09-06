@@ -3,7 +3,7 @@
 #' @param args is a list containing vectors of coalescent times \code{coal_times}, sampling times \code{samp_times}, and number 
 #'   sampled per sampling time \code{n_sampled}, etc. This list is the output of coalsim
 #' 
-#' @import ape
+#' @importFrom ape read.tree
 #' 
 #' @return A list with two elements \code{newikck} contains the tree in phylo format, \code{labels} a vector with tip labels 
 #' @export

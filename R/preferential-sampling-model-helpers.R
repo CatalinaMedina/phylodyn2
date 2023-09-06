@@ -5,7 +5,8 @@
 #' @param n_sampled numeric vector; number of sampling events at each sampling time, length matching the length of samp_times
 #' @param trim_end logical; TODO
 #' 
-#' @import stats
+#' @importFrom stats aggregate
+#' @importFrom stats complete.cases
 #' @importFrom utils head
 #'
 #' @return data frame with \describe{
