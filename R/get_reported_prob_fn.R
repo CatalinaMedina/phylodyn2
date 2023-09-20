@@ -29,6 +29,10 @@ get_reported_prob_fn <- function(
     warning("Time grid must begin with 0!")
   }
   
+  if (max(time_grid) < max(historic_reporting_delays)) { # Only happens in special case of simulations
+    time_grid <- c(time_grid, max(historic_reporting_delays))
+  }
+  
   sorted_delays <- data.frame(
     "reporting_delay" = historic_reporting_delays,
     "time_interval" = cut(
