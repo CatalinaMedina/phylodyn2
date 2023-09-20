@@ -9,8 +9,6 @@
 #'
 #' @importFrom mgcv gam
 #' @importFrom stats stepfun
-#' @importFrom tidyr replace_na
-#' @import dplyr
 #'
 #' @return function that returns vector of probabilities of a sample having been reported by the analysis's time zero; given the sampling time
 #' @export
@@ -30,49 +28,47 @@ get_reported_prob_fn <- function(
   }
   
   if (max(time_grid) < max(historic_reporting_delays)) { # Only happens in special case of simulations
-    time_grid <- c(time_grid, max(historic_reporting_delays))
+    grid <- c(time_grid, max(historic_reporting_delays))
+  } else {
+    grid <- time_grid
   }
   
-  sorted_delays <- data.frame(
-    "reporting_delay" = historic_reporting_delays,
+  sorted_delays <- sort(historic_reporting_delays)
+  
+  intervals_matched <- data.frame(
+    "reporting_delay" = sorted_delays,
     "time_interval" = cut(
-      x = historic_reporting_delays,
-      breaks = time_grid,
+      x = sorted_delays,
+      breaks = grid,
       right = FALSE,
       include.lowest = TRUE
     )
-  ) %>% 
-    arrange(time_interval) %>% 
-    filter(!is.na(time_interval))
+  )
   
-  num_samples <- length(historic_reporting_delays)
+  # From end interval repeat
+  intervals_matched <- intervals_matched[!is.na(intervals_matched$time_interval), ]
+ 
+  num_samples <- length(sorted_delays)
   
-  reported_prob_cumsum <- sorted_delays %>% 
-    group_by(time_interval) %>% 
-    summarize(n = n(), percent_reported = n()/num_samples) %>% 
-    full_join( # Account for intervals with no observations
-      data.frame(
-        "time_interval" = cut(
-          x = time_grid[-length(time_grid)],
-          breaks = time_grid,
-          right = FALSE,
-          include.lowest = TRUE
-        )
-      ), 
-      by = "time_interval"
-    ) %>% 
-    arrange(time_interval) %>% 
-    mutate(percent_reported = tidyr::replace_na(percent_reported, replace = 0)) %>%
-    mutate(n = tidyr::replace_na(n, replace = 0)) %>%
-    mutate(prob_reported = cumsum(percent_reported)) %>% 
-    mutate(prob_reported = replace(prob_reported, prob_reported == 0, values = min_probability))
+  int_tabulated <- data.frame(
+    "interval" = names(table(intervals_matched$time_interval)),
+    "num_reported_in_int" = as.numeric(table(intervals_matched$time_interval))
+  )
   
-  reported_probs <- c(min_probability, reported_prob_cumsum$prob_reported, 1)
+  int_tabulated$per_reported_in_int <- int_tabulated$num_reported_in_int / length(sorted_delays)
+  int_tabulated$prob_reported <- cumsum(int_tabulated$per_reported_in_int)
+  int_tabulated$prob_reported <- replace(
+    int_tabulated$prob_reported, 
+    int_tabulated$prob_reported == 0,
+    values = min_probability
+  )
+
+  reported_probs <- c(min_probability, int_tabulated$prob_reported, 1)
   
   if (return_log_rd_fn) reported_probs <- log(reported_probs)
   
   prob_reported_fun <- stats::stepfun(
-    x = time_grid,
+    x = grid,
     y = reported_probs,
     right = FALSE
   )
