@@ -150,6 +150,7 @@ plot_BNPR <- function(
       } else {
         coal_heatmap_y <- ymin
         samp_heatmap_y <- coal_heatmap_y + heatmap_width
+        
       }
       
       hist2heat(h_samp, y= samp_heatmap_y, wd = heatmap_width)
