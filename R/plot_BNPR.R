@@ -83,7 +83,7 @@ plot_BNPR <- function(
     if (is.null(axlabs)) {
       if (log_y) {
         graphics::plot(
-          1, 1, type = "n", log = log,
+          1, 1, type = "n", log = "y",
           xlab = xlab, ylab = ylab, main = main,
           xlim = xlim, ylim = ylim, ...
         )
