@@ -42,7 +42,7 @@ plot_BNPR <- function(
     newplot = TRUE, credible_region = TRUE,
     heatmaps = TRUE, heatmap_labels = TRUE,
     heatmap_labels_side = "right", heatmap_labels_cex = 0.7,
-    heatmap_width = 7, yscale = 1, ...
+    heatmap_width = NULL, yscale = 1, ...
   ){
   
   grid <- BNPR_out$grid
@@ -70,7 +70,7 @@ plot_BNPR <- function(
       
     }
     
-    if (heatmaps) {
+    if (heatmaps & log_y) {
       yspan <- ymax / ymin
       yextra <- yspan^(1/10)
       ylim <- c(ymin / (yextra^1.35), ymax)
@@ -100,12 +100,10 @@ plot_BNPR <- function(
     } else {
       if (log_y) {
         graphics::plot(
-          1, 1, type = "n", log = log,
+          1, 1, type = "n", log = "y",
           xlab = "", ylab = ylab, main = main,
           xlim = xlim, ylim = ylim, xaxt = "n", ...
         )
-        graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
-        graphics::mtext(text = xlab, side = 1, line = xmarline)
         
       } else {
         graphics::plot(
@@ -113,10 +111,11 @@ plot_BNPR <- function(
           xlab = "", ylab = ylab, main = main,
           xlim = xlim, ylim = ylim, xaxt = "n", ...
         )
-        graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
-        graphics::mtext(text = xlab, side = 1, line = xmarline)
         
       }
+      
+      graphics::axis(1, at = axlabs$x, labels = axlabs$labs, las = 2)
+      graphics::mtext(text = xlab, side = 1, line = xmarline)
       
     }
     
@@ -142,8 +141,19 @@ plot_BNPR <- function(
       h_samp <- graphics::hist(samps, breaks=breaks, plot=FALSE)
       h_coal <- graphics::hist(coals, breaks=breaks, plot=FALSE)
       
-      hist2heat(h_samp, y= ymin / yextra^0.5, wd = heatmap_width)
-      hist2heat(h_coal, y= ymin / yextra, wd = heatmap_width)
+      heatmap_width <- (ymax - ymin) / 40
+      
+      if (log_y) {
+        samp_heatmap_y <- ymin / yextra^0.5
+        coal_heatmap_y <- ymin / yextra
+        
+      } else {
+        coal_heatmap_y <- ymin
+        samp_heatmap_y <- coal_heatmap_y + heatmap_width
+      }
+      
+      hist2heat(h_samp, y= samp_heatmap_y, wd = heatmap_width)
+      hist2heat(h_coal, y= coal_heatmap_y, wd = heatmap_width)
       
       if (heatmap_labels) {
         if (heatmap_labels_side == "left") {
@@ -161,14 +171,24 @@ plot_BNPR <- function(
           
         }
         
+        if (log_y) {
+          samp_heatmap_lab_y <- ymin/(yextra^0.20)
+          coal_heatmap_lab_y <- ymin/(yextra^1.25)
+        } else {
+          samp_heatmap_lab_y <- 1.25 * samp_heatmap_y
+          coal_heatmap_lab_y <- coal_heatmap_y
+        }
+        
         graphics::text(
-          x = lab_x, y = ymin/(yextra^0.20), labels = "Sampling events",
+          x = lab_x, y = samp_heatmap_lab_y, labels = "Sampling events",
           adj = c(lab_adj, 0), cex = heatmap_labels_cex
         )
         graphics::text(
-          x = lab_x, y = ymin/(yextra^1.25), labels = "Coalescent events",
+          x = lab_x, y = coal_heatmap_lab_y, labels = "Coalescent events",
           adj = c(lab_adj, 1), cex = heatmap_labels_cex
         )
+        
+        
         
       }
     }
