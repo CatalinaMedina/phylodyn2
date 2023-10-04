@@ -24,11 +24,12 @@ plot_BNPR(
   traj_col = col,
   newplot = TRUE,
   credible_region = TRUE,
-  heatmaps = TRUE,
+  samp_heatmap = TRUE,
+  coal_heatmap = TRUE,
   heatmap_labels = TRUE,
   heatmap_labels_side = "right",
   heatmap_labels_cex = 0.7,
-  heatmap_width = 7,
+  heatmap_width = NULL,
   yscale = 1,
   ...
 )
@@ -72,7 +73,9 @@ previously open plot.}
 
 \item{credible_region}{logical whether to display pointwise credible region.}
 
-\item{heatmaps}{boolean whether to display sampling and coalescent heatmaps.}
+\item{samp_heatmap}{boolean whether to display sampling heatmap.}
+
+\item{coal_heatmap}{boolean whether to display sampling coalescent heatmap.}
 
 \item{heatmap_labels}{boolean whether to display labels on heatmaps.}
 

@@ -21,7 +21,8 @@
 #' @param newplot boolean whether to create a new plot or superimpose over a 
 #'   previously open plot.
 #' @param credible_region logical whether to display pointwise credible region.
-#' @param heatmaps boolean whether to display sampling and coalescent heatmaps.
+#' @param samp_heatmap boolean whether to display sampling heatmap.
+#' @param coal_heatmap boolean whether to display sampling coalescent heatmap.
 #' @param heatmap_labels boolean whether to display labels on heatmaps.
 #' @param heatmap_labels_side string which side of plot to display heatmaps.
 #' @param heatmap_labels_cex numeric scaling factor for heatmap labels.
@@ -40,7 +41,7 @@ plot_BNPR <- function(
     xlab = "Time", xmarline = 3, axlabs = NULL,
     traj_lty = 2, traj_lwd = 2, traj_col = col,
     newplot = TRUE, credible_region = TRUE,
-    heatmaps = TRUE, heatmap_labels = TRUE,
+    samp_heatmap = TRUE, coal_heatmap = TRUE, heatmap_labels = TRUE,
     heatmap_labels_side = "right", heatmap_labels_cex = 0.7,
     heatmap_width = NULL, yscale = 1, ...
   ){
@@ -70,7 +71,7 @@ plot_BNPR <- function(
       
     }
     
-    if (heatmaps & log_y) {
+    if ((samp_heatmap & log_y) | (coal_heatmap & log_y)) {
       yspan <- ymax / ymin
       yextra <- yspan^(1/10)
       ylim <- c(ymin / (yextra^1.35), ymax)
@@ -130,7 +131,7 @@ plot_BNPR <- function(
   }
   
   if (newplot) {
-    if (heatmaps) {
+    if (samp_heatmap | coal_heatmap) {
       samps <- rep(BNPR_out$samp_times, BNPR_out$n_sampled)
       samps <- samps[samps <= max(xlim) & samps >= min(xlim)]
       
@@ -153,8 +154,12 @@ plot_BNPR <- function(
         
       }
       
-      hist2heat(h_samp, y= samp_heatmap_y, wd = heatmap_width)
-      hist2heat(h_coal, y= coal_heatmap_y, wd = heatmap_width)
+      if (samp_heatmap) {
+        hist2heat(h_samp, y = samp_heatmap_y, wd = heatmap_width)
+      } 
+      if (coal_heatmap) {
+        hist2heat(h_coal, y = coal_heatmap_y, wd = heatmap_width)
+      }
       
       if (heatmap_labels) {
         if (heatmap_labels_side == "left") {
@@ -176,20 +181,23 @@ plot_BNPR <- function(
           samp_heatmap_lab_y <- ymin/(yextra^0.20)
           coal_heatmap_lab_y <- ymin/(yextra^1.25)
         } else {
-          samp_heatmap_lab_y <- 1.25 * samp_heatmap_y
+          samp_heatmap_lab_y <- 2 * samp_heatmap_y
           coal_heatmap_lab_y <- coal_heatmap_y
         }
         
-        graphics::text(
-          x = lab_x, y = samp_heatmap_lab_y, labels = "Sampling events",
-          adj = c(lab_adj, 0), cex = heatmap_labels_cex
-        )
-        graphics::text(
-          x = lab_x, y = coal_heatmap_lab_y, labels = "Coalescent events",
-          adj = c(lab_adj, 1), cex = heatmap_labels_cex
-        )
+        if (samp_heatmap) {
+          graphics::text(
+            x = lab_x, y = samp_heatmap_lab_y, labels = "Sampling events",
+            adj = c(lab_adj, 0), cex = heatmap_labels_cex
+          )
+        } 
         
-        
+        if (coal_heatmap) {
+          graphics::text(
+            x = lab_x, y = coal_heatmap_lab_y, labels = "Coalescent events",
+            adj = c(lab_adj, 1), cex = heatmap_labels_cex
+          )
+        }
         
       }
     }
