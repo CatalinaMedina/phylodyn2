@@ -21,6 +21,7 @@
 #' @param newplot boolean whether to create a new plot or superimpose over a 
 #'   previously open plot.
 #' @param credible_region logical whether to display pointwise credible region.
+#' @param credible_region_col color for credible region.
 #' @param samp_heatmap boolean whether to display sampling heatmap.
 #' @param coal_heatmap boolean whether to display sampling coalescent heatmap.
 #' @param heatmap_labels boolean whether to display labels on heatmaps.
@@ -40,7 +41,7 @@ plot_BNPR <- function(
     ylab = "Effective Population Size",
     xlab = "Time", xmarline = 3, axlabs = NULL,
     traj_lty = 2, traj_lwd = 2, traj_col = col,
-    newplot = TRUE, credible_region = TRUE,
+    newplot = TRUE, credible_region = TRUE, credible_region_col = "lightgray",
     samp_heatmap = TRUE, coal_heatmap = TRUE, heatmap_labels = TRUE,
     heatmap_labels_side = "right", heatmap_labels_cex = 0.7,
     heatmap_width = NULL, yscale = 1, ...
@@ -123,7 +124,7 @@ plot_BNPR <- function(
   }
   
   if (credible_region) {
-    shade_band(x = t, ylo = ylo, yhi = yhi, col = "lightgray")
+    shade_band(x = t, ylo = ylo, yhi = yhi, col = credible_region_col)
   }
   
   if (!is.null(traj)) {

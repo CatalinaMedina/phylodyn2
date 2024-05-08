@@ -24,6 +24,7 @@ plot_BNPR(
   traj_col = col,
   newplot = TRUE,
   credible_region = TRUE,
+  credible_region_col = "lightgray",
   samp_heatmap = TRUE,
   coal_heatmap = TRUE,
   heatmap_labels = TRUE,
@@ -72,6 +73,8 @@ the true trajectory.}
 previously open plot.}
 
 \item{credible_region}{logical whether to display pointwise credible region.}
+
+\item{credible_region_col}{color for credible region.}
 
 \item{samp_heatmap}{boolean whether to display sampling heatmap.}
 
