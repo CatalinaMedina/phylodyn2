@@ -10,7 +10,7 @@
 #' @param prec_beta numeric; hyperparameter beta for the gamma prior of kappa, the precision of the Gaussian random walk prior
 #' @param beta1_mean numeric; mean of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
 #' @param beta1_prec numeric; precision of the normal prior assigned to the coefficient of the log effective population size in the sampling intensity formula
-#' @param time0_offset_from_sim_rd numeric; For BNPR_PS_with_RD only. The time between the first reported sampling time and the true first sampling time, time zero, in the case of simulating reporting delays. Generally should be left as NULL. Time zero is considered to be the first sampling time, but when simulating reporting delays and dropping tips from the tree, time zero shifts to the first reported sampling time. 
+#' @param time_offset numeric; For BNPR_PS_with_RD only. The time between the first observed sampling time and time zero of analysis. Time zero is considered to be the first sampling time for BNPR() and BNPR_PS(), but BNPR_PS_with_RD() recognizes that this will likely not be true. This argument shifts the time to correspond to time zero of analysis, which is both helpful practically, and necessary for the reporting probability function to correctly assign probability or being reported based on sampling time. 
 #' @param fns function; list of covariate functions for the sampling intensity
 #' @param log_fns logical; specifies if the log of the covariate functions, fns, needs to be taken. FALSE indicates that the covariate function already returns log transformed values
 #' @param fns_coeff_prior_mean numeric vector; normal prior mean for fns coefficient(s). If non NULL, must match length of fns
@@ -20,6 +20,8 @@
 #' @param forward logical whether to use the finite difference approximations of
 #'   the log-derivative as a forward or backward derivative.
 #' @param link link for INLA "regression"
+#' 
+#' @importFrom methods is
 #'   
 #' @return Phylodynamic reconstruction of effective population size at grid points:\describe{ 
 #'   \item{result}{contains the INLA output}
@@ -39,7 +41,7 @@
 BNPR_PS_with_RD <- function(
     data, 
     historic_reporting_delays,
-    rd_as_offset = TRUE, time0_offset_from_sim_rd = NULL,
+    rd_as_offset = TRUE, time_offset = NULL,
     lengthout = 100, 
     prec_alpha = 0.01, prec_beta = 0.01, beta1_mean = 0, beta1_prec = 0.001, 
     fns = NULL, log_fns = TRUE, 
@@ -49,7 +51,7 @@ BNPR_PS_with_RD <- function(
 ){
   
   # Get grid for rd_fn
-  if (class(data) == "phylo") {
+  if (methods::is(data, "phylo")) {
     phy <- summarize_phylo(data)
     
   } else if (all(c("coal_times", "samp_times", "n_sampled") %in% names(data))) {
@@ -73,12 +75,12 @@ BNPR_PS_with_RD <- function(
     return_log_rd_fn = !rd_fn_will_be_logged_later
   )
   
-  if (is.null(time0_offset_from_sim_rd)) {
+  if (is.null(time_offset)) {
     rd_prob_fn <- rd_fn
-  } else if (is.numeric(time0_offset_from_sim_rd) & time0_offset_from_sim_rd > 0) {
-    rd_prob_fn <- function (x) rd_fn(x + time0_offset_from_sim_rd)
+  } else if (is.numeric(time_offset) & time_offset > 0) {
+    rd_prob_fn <- function (x) rd_fn(x + time_offset)
   } else {
-    stop("time0_offset_from_sim_rd should be NULL or a positive number.")
+    stop("time_offset should be NULL or a positive number.")
   }
   
   if (rd_as_offset) {
@@ -145,15 +147,15 @@ BNPR_PS_with_RD <- function(
   
   res$rd_prob_fn <- rd_prob_fn
   
-  if (is.null(time0_offset_from_sim_rd)) {
+  if (is.null(time_offset)) {
     return(res)
     
   } else {
     adj_BNPR_output <- res
-    adj_BNPR_output$grid <- res$grid + time0_offset_from_sim_rd
-    adj_BNPR_output$x <- res$x + time0_offset_from_sim_rd
-    adj_BNPR_output$samp_times <- res$samp_times + time0_offset_from_sim_rd
-    adj_BNPR_output$coal_times <- res$coal_times + time0_offset_from_sim_rd
+    adj_BNPR_output$grid <- res$grid + time_offset
+    adj_BNPR_output$x <- res$x + time_offset
+    adj_BNPR_output$samp_times <- res$samp_times + time_offset
+    adj_BNPR_output$coal_times <- res$coal_times + time_offset
     return(adj_BNPR_output)
     
   }

@@ -19,7 +19,9 @@
 #' @param forward logical whether to use the finite difference approximations of
 #'   the log-derivative as a forward or backward derivative.
 #' @param link link for INLA "regression"
-#'   
+#' 
+#' @importFrom methods is
+#'
 #' @return Phylodynamic reconstruction of effective population size at grid points:\describe{ 
 #'   \item{result}{contains the INLA output}
 #'   \item{data}{contains the information passed to INLA}
@@ -43,7 +45,7 @@ BNPR <- function(
     simplify = TRUE, derivative = FALSE, forward = TRUE, link = 1
   ){
   
-  if (class(data) == "phylo") {
+  if (methods::is(data, "phylo")) {
     phy <- summarize_phylo(data)
     
   } else if (all(c("coal_times", "samp_times", "n_sampled") %in% names(data))) {

@@ -4,6 +4,7 @@
 #' @param backwards Boolean; TODO
 #' 
 #' @importFrom ape dist.nodes
+#' @importFrom methods is
 #' @import utils
 #'
 #' @return List with: \describe{
@@ -15,7 +16,7 @@
 #' @export
 #'
 connect_sample_to_tips <- function(phy, backwards = TRUE){
-  if (class(phy) != "phylo"){
+  if (!methods::is(phy, "phylo")){
     stop("object \"phy\" is not of class \"phylo\"")
   }
   
@@ -61,12 +62,13 @@ connect_sample_to_tips <- function(phy, backwards = TRUE){
 #' @param tr \code{phylo} object containing a phylogeny
 #' 
 #' @importFrom ape node.depth.edgelength
+#' @importFrom methods is
 #'
 #' @return numeric vector TODO
 #'
 branching_sampling_times <- function(tr){
   ##Updated by Julia Sep 1, 2021. The previous function assumed internal nodes are ordered
-  if (class(tr) != "phylo"){
+  if (!methods::is(tr, "phylo")){
     stop("object \"tr\" is not of class \"phylo\"")
   }
   
