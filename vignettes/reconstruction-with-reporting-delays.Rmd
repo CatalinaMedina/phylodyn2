@@ -101,7 +101,7 @@ Now we can plot the results to compare.
 
 Here we will manually plot the results for easier comparison between methods, and conversion of time to dates for x axis labels.
 
-```{r, fig.width = 6, fig.height = 4.5}
+```{r, fig.width = 6, fig.height = 4.5, message=FALSE}
 library(ggplot2)
 
 all_output <- rbind(
@@ -134,10 +134,7 @@ all_output$adj_t <- all_output$t + time_zero_offset
 # Change scale from time (years) to dates
 all_output$Date <- as.Date(-all_output$adj_t * 365, origin = time_zero_date)
 
-# Subset time to more recent
-plotting_data <- all_output[all_output$Date >= as.Date("2021-02-01"), ]
-
-plotting_data |>
+all_output |>
   ggplot(aes(x = Date, y = eff_pop_median, color = model)) +
   geom_line(linetype = "dashed") +
   geom_ribbon(
@@ -167,7 +164,7 @@ plotting_data |>
     date_breaks = "1 months", 
     date_labels = "%b %d, %Y", 
     expand = c(0, 0),
-    limits = c(as.Date("2021-02-01"), as.Date("2021-07-31"))
+    limits = c(as.Date("2021-02-02"), as.Date("2021-08-01"))
   ) +
   scale_color_manual(
     values = c("blue", "red", "darkgreen"),
