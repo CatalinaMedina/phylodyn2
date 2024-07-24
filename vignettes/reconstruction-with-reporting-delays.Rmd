@@ -1,8 +1,8 @@
 ---
-title: "Bayesian Nonparametric Phylodynamic Reconstruction with reporting delays: SARS-CoV-2 in state of Washington in 2021"
+title: "Bayesian Nonparametric Phylodynamic Reconstruction with reporting delays: COVID-19 in Washington"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{reconstruction-with-reporting-delays}
+  %\VignetteIndexEntry{Bayesian Nonparametric Phylodynamic Reconstruction with reporting delays: COVID-19 in Washington}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,7 +14,193 @@ knitr::opts_chunk$set(
 )
 ```
 
+This vignette shows a case study of Washington SARS-CoV-2 data, using `phylodyn2`.
+We start by loading the `phylodyn2` package.
+
 ```{r setup}
 library(phylodyn2)
 ```
 
+In preparation, we aligned the sequences using the software [MAFFT](https://mafft.cbrc.jp/alignment/software/),
+and inferred a maximum clade credibility genealogy using the software [BEAST](https://beast.community/)[^1].
+We packaged this genealogy in a `phylo` object `washington_genealogy`, and we load it now.
+
+```{r}
+data("washington_genealogy")
+```
+
+
+[^1]: We infer the genealogy branch lengths in units of years using a strict molecular clock, a Bayesian Skygrid effective population size prior, and an HKY substitution model. The code to replicate this analysis can be found at <https://github.com/CatalinaMedina/reporting-delays-in-phylodynamics-paper>.
+
+We use `BNPR()` and `BNPR_PS()` and the `BNPR_PS_with_RD()` to calculate approximate effective population size marginals (without and with a sampling model). 
+The `BNPR_PS_with_RD()` uses the delay aware preferential sampling model proposed in [TODO: add paper](TODO). 
+This model needs a vector of reporting delays to calculate the empirical probability of a sample being reported by time zero of the analysis.
+
+The `washington_delays` object is a data frame of sampling and reporting dates for a random subset of SARS-CoV-2 sequences in the state of Washington reported in July of 2021 to [GISAID](https://gisaid.org/). 
+August 1st is the "time zero" for our analysis so these dates are taken to be representative of recent reporting delays.
+
+```{r}
+data("washington_delays")
+```
+
+Add a column for each reporting delay
+
+```{r}
+recent_delays <- as.numeric(
+  washington_delays$reporting_date - washington_delays$sampling_date
+)
+
+time_zero_date <- as.Date("2021-08-01")
+```
+
+We are now ready to calculate the effective population size marginals with each of the three methods available in phylodyn.
+
+```{r}
+# Approx grid width of 3 days. See paper repo for details.
+grid_length <- 163 
+
+# Preferential sampling coefficient prior mean
+pref_samp_coef_mean <- 1
+
+# Preferential sampling coefficient prior precision
+pref_samp_coef_precision <- 1 / (0.5)^2
+
+# Time (years) between time zero of analysis and first observed sampling time. 
+# This is required to ensure correct matching between sampling time and 
+# reporting probability. See paper repo for details.
+time_zero_offset <- 0.03011636 
+
+set.seed(1520)
+bnpr_fit <- BNPR(
+  washington_genealogy, 
+  lengthout = grid_length
+)
+
+set.seed(1520)
+bnpr_ps_fit <- BNPR_PS(
+  washington_genealogy, 
+  lengthout = grid_length,
+  beta1_mean = pref_samp_coef_mean, 
+  beta1_prec = pref_samp_coef_precision
+)
+
+set.seed(1520)
+bnpr_ps_with_rp_fit <- BNPR_PS_with_RD(
+  washington_genealogy, 
+  lengthout = grid_length,
+  historic_reporting_delays = recent_delays / 365.25,
+  beta1_mean = pref_samp_coef_mean, 
+  beta1_prec = pref_samp_coef_precision,
+  time_offset = time_zero_offset
+)
+
+```
+
+Now we can plot the results to compare. 
+`plot_BNPR()` could be used to plot a single trajectory.
+
+Here we will manually plot the results for easier comparison between methods, and conversion of time to dates for x axis labels.
+
+```{r, fig.width = 6, fig.height = 4.5}
+library(ggplot2)
+
+all_output <- rbind(
+  data.frame(
+    t = bnpr_fit$x + time_zero_offset, # Have to manually do offset for BNPR()
+    eff_pop_median = bnpr_fit$effpop,
+    eff_pop_95ub = bnpr_fit$effpop975,
+    eff_pop_95lb = bnpr_fit$effpop025,
+    model = "BNPR"
+  ),
+  data.frame(
+    t = bnpr_ps_fit$x + time_zero_offset, # Have to manually do offset for BNPR_PS()
+    eff_pop_median = bnpr_ps_fit$effpop,
+    eff_pop_95ub = bnpr_ps_fit$effpop975,
+    eff_pop_95lb = bnpr_ps_fit$effpop025,
+    model = "BNPR PS"
+  ),
+  data.frame(
+    t = bnpr_ps_with_rp_fit$x,
+    eff_pop_median = bnpr_ps_with_rp_fit$effpop,
+    eff_pop_95ub = bnpr_ps_with_rp_fit$effpop975,
+    eff_pop_95lb = bnpr_ps_with_rp_fit$effpop025,
+    model = "Delay Aware BNPR PS"
+  )
+)
+
+# Change scale from time (years) to dates
+all_output$Date <- as.Date(-all_output$t * 365, origin = time_zero_date)
+
+# Subset time to more recent
+plotting_data <- all_output[all_output$Date >= as.Date("2021-02-01"), ]
+
+plotting_data |>
+  ggplot(aes(x = Date, y = eff_pop_median, color = model)) +
+  geom_line(linetype = "dashed") +
+  geom_ribbon(
+    aes(
+      ymin = eff_pop_95lb, 
+      ymax = eff_pop_95ub, 
+      color = model, 
+      fill = model
+    ), 
+    alpha = 0.4, 
+    colour = NA
+  ) +
+  annotate(
+    'rect',
+    xmin = as.Date("2021-02-02"), 
+    xmax = as.Date("2021-07-02"),
+    ymin = -Inf, ymax = Inf,
+    fill = '#00000010'
+  ) +
+  coord_cartesian(ylim = c(0, 35)) +
+  labs(
+    y = "Effective Population Size",
+    color = "Model",
+    fill = "Model"
+  ) +
+  scale_x_date(
+    date_breaks = "1 months", 
+    date_labels = "%b %d, %Y", 
+    expand = c(0, 0),
+    limits = c(as.Date("2021-02-01"), as.Date("2021-07-31"))
+  ) +
+  scale_color_manual(
+    values = c("blue", "red", "darkgreen"),
+    labels = c("BNPR", "BNPR PS", "Delay Aware BNPR PS")
+  ) +
+  scale_fill_manual(
+    values = c("blue", "red", "darkgreen"),
+    labels = c("BNPR", "BNPR PS", "Delay Aware BNPR PS")
+  ) +
+  guides(
+    color = guide_legend(title.position = "top", title.hjust = 0.5),
+    fill = guide_legend(title.position = "top",  title.hjust = 0.5)
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    strip.background = element_blank(),
+    strip.text.x = element_blank(),
+    legend.key.size = unit(1, "lines")
+  ) + 
+  facet_wrap(
+    ~  factor(
+      model, 
+      levels = c(
+        "BNPR",
+        "BNPR PS",
+        "Delay Aware BNPR PS"
+      )
+    ), 
+    nrow = 1
+  )
+```
+
+The white background indicates the time period where reporting delays are likely.
+The BNPR model has wider credible intervals than the other two models.
+The BNPR PS and delay aware BNPR PS models have similar results in the time period without reporting delays (gray shaded background)
+The delay aware BNPR PS model infers higher effective population size near time zero, August 1, than the BNPR PS model.

@@ -8,7 +8,7 @@ BNPR_PS_with_RD(
   data,
   historic_reporting_delays,
   rd_as_offset = TRUE,
-  time0_offset_from_sim_rd = NULL,
+  time_offset = NULL,
   lengthout = 100,
   prec_alpha = 0.01,
   prec_beta = 0.01,
@@ -33,7 +33,7 @@ sampled per sampling time \code{n_sampled}.}
 
 \item{rd_as_offset}{logical whether reporting delay adjustment should be implemented as offset (TRUE), or as a covariate function with a steep prior (FALSE)}
 
-\item{time0_offset_from_sim_rd}{numeric; For BNPR_PS_with_RD only. The time between the first reported sampling time and the true first sampling time, time zero, in the case of simulating reporting delays. Generally should be left as NULL. Time zero is considered to be the first sampling time, but when simulating reporting delays and dropping tips from the tree, time zero shifts to the first reported sampling time.}
+\item{time_offset}{numeric; For BNPR_PS_with_RD only. The time between the first observed sampling time and time zero of analysis. Time zero is considered to be the first sampling time for BNPR() and BNPR_PS(), but BNPR_PS_with_RD() recognizes that this will likely not be true. This argument shifts the time to correspond to time zero of analysis, which is both helpful practically, and necessary for the reporting probability function to correctly assign probability or being reported based on sampling time.}
 
 \item{lengthout}{numeric specifying number of grid points.}
 

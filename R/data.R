@@ -7,5 +7,20 @@
 #' delays in real-time phylodynamic analyses with preferential sampling. 
 #' TODO: Update with paper location
 #'
-#' @source <https://doi.org/10.55876/gis8.240619zd> 
+#' @source <https://github.com/CatalinaMedina/reporting-delays-in-phylodynamics-paper> 
 "washington_genealogy"
+
+#' Washington SARS-CoV-2 Sampling and Reporting Dates
+#'
+#' Sampling and reporting dates for a random subset of SARS-CoV-2 sequences in 
+#' the state of Washington reported in July of 2021 to GISAID.
+#' 
+#' @format ## `washington_delays`
+#' A data frame with 56 rows and 2 columns:
+#' \describe{
+#'   \item{sampling_date}{Date the sample was collected.}
+#'   \item{reporting_date}{Date the sample's genetic sequence was reported to the database.}
+#' }
+#'
+#' @source <https://doi.org/10.55876/gis8.240619zd> 
+"washington_delays"
