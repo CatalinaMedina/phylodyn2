@@ -106,14 +106,14 @@ library(ggplot2)
 
 all_output <- rbind(
   data.frame(
-    t = bnpr_fit$x + time_zero_offset, # Have to manually do offset for BNPR()
+    t = bnpr_fit$x,
     eff_pop_median = bnpr_fit$effpop,
     eff_pop_95ub = bnpr_fit$effpop975,
     eff_pop_95lb = bnpr_fit$effpop025,
     model = "BNPR"
   ),
   data.frame(
-    t = bnpr_ps_fit$x + time_zero_offset, # Have to manually do offset for BNPR_PS()
+    t = bnpr_ps_fit$x,
     eff_pop_median = bnpr_ps_fit$effpop,
     eff_pop_95ub = bnpr_ps_fit$effpop975,
     eff_pop_95lb = bnpr_ps_fit$effpop025,
@@ -128,8 +128,11 @@ all_output <- rbind(
   )
 )
 
+# Time = 0 is first observed sampling time, but really we want it relative to our time zero of anlysis
+all_output$adj_t <- all_output$t + time_zero_offset
+
 # Change scale from time (years) to dates
-all_output$Date <- as.Date(-all_output$t * 365, origin = time_zero_date)
+all_output$Date <- as.Date(-all_output$adj_t * 365, origin = time_zero_date)
 
 # Subset time to more recent
 plotting_data <- all_output[all_output$Date >= as.Date("2021-02-01"), ]

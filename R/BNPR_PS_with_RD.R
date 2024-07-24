@@ -147,16 +147,5 @@ BNPR_PS_with_RD <- function(
   
   res$rd_prob_fn <- rd_prob_fn
   
-  if (is.null(time_offset)) {
-    return(res)
-    
-  } else {
-    adj_BNPR_output <- res
-    adj_BNPR_output$grid <- res$grid + time_offset
-    adj_BNPR_output$x <- res$x + time_offset
-    adj_BNPR_output$samp_times <- res$samp_times + time_offset
-    adj_BNPR_output$coal_times <- res$coal_times + time_offset
-    return(adj_BNPR_output)
-    
-  }
+  return(res)
 }
