@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_newick.R
 \name{generate_newick}
 \alias{generate_newick}
-\title{Returns a phylo object from the arguments generated with coalsim}
+\title{Generate Newick}
 \usage{
 generate_newick(args)
 }
@@ -11,10 +11,10 @@ generate_newick(args)
 sampled per sampling time \code{n_sampled}, etc. This list is the output of coalsim}
 }
 \value{
-A list with two elements \code{newikck} contains the tree in phylo format, \code{labels} a vector with tip labels
+A list with two elements \code{newick} contains the tree in phylo format, \code{labels} a vector with tip labels
 }
 \description{
-Returns a phylo object from the arguments generated with coalsim
+Creates a phylo object from the results of the \code{coalsim()} function with tip labels
 }
 \examples{
 constant <- function(x){return (rep(1,length(x)))}
