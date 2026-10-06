@@ -1,7 +1,7 @@
 Package: phylodyn2
 Type: Package
 Title: Bayesian Nonparametric Phylodynamic Reconstruction of Effective Population Size Trajectory
-Version: 1.1.0
+Version: 1.1.1
 Description: This package originated as a copy of phylodyn, an R package with the purpose of facilitating phylodynamic inference and analyses. phylodyn2 has reduced, specific functionality compared to phylodyn, and it implements methodology developed for accounting for reporting delays, by incorportating reporting probabilities in the preferential sampling model for real-time phylodynamic analyses.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -17,13 +17,15 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    ggplot2
-VignetteBuilder: knitr
+    ggplot2,
+    quarto
+VignetteBuilder: knitr, quarto
 Depends: 
     R (>= 2.10)
 Config/roxygen2/version: 8.0.0
 Authors@R: c(
     person("Catalina", "Medina", , "catalina.medina@csuci.edu", role = c("aut", "cre")),
-    person("Volodymyr", "Minin", , "vminin@uci.edu", role = c("aut", "cre")),
-    person("Dylan", "Wikel", , "dylanwikel@gmail.com", role = "ctb")
+    person("Volodymyr", "Minin", , "vminin@uci.edu", role = "aut"),
+    person("Dylan", "Wikel", , "dylanwikel@gmail.com", role = "ctb"),
+    person("Morgan", "Bohman", , "morganbohman27@gmail.com", role = "ctb")
   )
