@@ -1,11 +1,13 @@
-#' Returns a phylo object from the arguments generated with coalsim
+#' Generate Newick
+#' 
+#' Creates a phylo object from the results of the \code{coalsim()} function with tip labels 
 #' 
 #' @param args is a list containing vectors of coalescent times \code{coal_times}, sampling times \code{samp_times}, and number 
 #'   sampled per sampling time \code{n_sampled}, etc. This list is the output of coalsim
 #' 
 #' @importFrom ape read.tree
 #' 
-#' @return A list with two elements \code{newikck} contains the tree in phylo format, \code{labels} a vector with tip labels 
+#' @return A list with two elements \code{newick} contains the tree in phylo format, \code{labels} a vector with tip labels 
 #' @export
 #' 
 #' @examples
