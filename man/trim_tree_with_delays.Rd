@@ -2,7 +2,7 @@
 % Please edit documentation in R/trim_tree_with_delays.R
 \name{trim_tree_with_delays}
 \alias{trim_tree_with_delays}
-\title{Trim phylogeny with reporting delays}
+\title{Trim phylogeny with simulated reporting delays}
 \usage{
 trim_tree_with_delays(full_phylo, calc_report_prob, original_samp_times)
 }

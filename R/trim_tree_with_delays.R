@@ -1,4 +1,4 @@
-#' Trim phylogeny with reporting delays
+#' Trim phylogeny with simulated reporting delays
 #'
 #' Function to simulate reporting delays from provided \code{calc_report_prob()} according to sampling times. Useful for subsetting tree to only observed samples and keeping track of original time zero.
 #'
