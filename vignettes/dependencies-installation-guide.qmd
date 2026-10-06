@@ -1,0 +1,114 @@
+---
+title: "Dependencies Installation Guide"
+vignette: >
+  %\VignetteIndexEntry{Dependencies Installation Guide}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+---
+
+Many of the required packages can be installed in more than one way, and only a few are hosted on CRAN. For each package, we give our recommended installation method and link to its documentation for alternatives.
+
+## R & RStudio Installation
+
+Install the latest version of R & RStudio for your device
+
+- [R](https://www.r-project.org/)
+- [RStudio](https://posit.co/products/open-source/rstudio)
+
+## Rtools Installation (Windows Only)
+
+If you're using a Windows device, download Rtools before installing the following dependencies
+
+- [RTools](https://cran.rstudio.com/bin/windows/Rtools/)
+
+## Dependencies Installation
+
+To install and use `phylodyn` & `phylodyn2`, you'll need to install the following dependencies.
+
+### From 
+
+These are the necessary packages from CRAN:
+```{r}
+#| eval: false
+install.packages(c("ape", "spam", "loo", "rstan", "pak"))
+```
+
+### From GitHub
+
+```{r}
+#| eval: false
+pak::pak("jrfaulkner/spmrf")
+```
+
+### External Packages 
+
+You'll need to install `Rgraphviz` and `graph` using:
+```{r}
+#| eval: false
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install(c("graph", "Rgraphviz"))
+```
+*See [Bioconductor](https://www.bioconductor.org/packages/devel/bioc/html/Rgraphviz.html) for package documentation.*
+
+### INLA Installation
+
+Download `INLA` using:
+```{r}
+#| eval: false
+install.packages(
+  "INLA", 
+  repos = c(
+    getOption("repos"), 
+    INLA = "https://inla.r-inla-download.org/R/stable"
+  ), 
+  dep = TRUE
+)
+```
+
+If the *stable* installation does not work, use the *testing* version instead 
+```{r}
+#| eval: false
+install.packages(
+  "INLA", 
+  repos = c(
+    getOption("repos"), 
+    INLA = "https://inla.r-inla-download.org/R/testing"
+  ), 
+  dep = TRUE
+)
+```
+*See [inla.org](https://www.r-inla.org/download/index.html) for package documentation.*
+
+## Phylodyn Installation
+
+After installing all dependencies, (adding pak) install `phylodyn` using:
+```{r}
+#| eval: false
+pak::pak("mdkarcher/phylodyn")
+```
+*See <https://github.com/mdkarcher/phylodyn> for package documentation.* 
+
+## Phylodyn2 Installation
+
+Install using: 
+```{r}
+#| eval: false
+pak::pak("CatalinaMedina/phylodyn2")
+```
+*See <https://github.com/CatalinaMedina/phylodyn2> for package documentation.*
+
+## Adapref Installation 
+
+Make sure all dependencies have been installed. Install adapref using:
+```{r}
+#| eval: false
+pak::pak("lorenzocapp/adapref")
+```
+*See <https://github.com/lorenzocapp/adapref> for documentation.*
+
